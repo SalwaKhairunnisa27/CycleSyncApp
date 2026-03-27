@@ -1,0 +1,51 @@
+# ==============================
+# Android / Kotlin / Gradle
+# ==============================
+
+# Build files
+/build/
+/app/build/
+
+# Gradle
+.gradle/
+.gradle/*
+gradle-app.setting
+
+# Local configuration
+local.properties
+
+# IDE (Android Studio / IntelliJ)
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# NDK
+.externalNativeBuild/
+.cxx/
+
+# Captures (screenshots)
+captures/
+
+# Logs
+*.log
+
+# Keystore (PENTING - jangan sampai ke-upload)
+*.jks
+*.keystore
+
+# Kotlin / Java compiled files
+*.class
+
+# Generated files
+out/
+
+# Mac system files
+*.swp
+
+Sdk/
+.android/
+.gradle/
+.idea/
