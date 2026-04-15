@@ -37,6 +37,13 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 }
 
@@ -50,11 +57,25 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-//    Room & Security (Tugas Devina)
+    // Material Components (wajib untuk CardView, dll)
+    implementation("com.google.android.material:material:1.9.0")
+    
+    // CardView
+    implementation("androidx.cardview:cardview:1.0.0")
+    
+    // ConstraintLayout
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    // Navigation & View System
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
+    // Room & Security
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
-    implementation(libs.sqlcipher.android)
+    // implementation(libs.sqlcipher.android)
     implementation(libs.androidx.sqlite.ktx)
     implementation(libs.androidx.security.crypto)
 
