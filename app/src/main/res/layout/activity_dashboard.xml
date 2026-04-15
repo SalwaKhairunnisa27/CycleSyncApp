@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_main">
+
+    <!-- Hero section (pink gradient) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_splash"
+        android:orientation="vertical"
+        android:padding="18dp"
+        android:paddingTop="40dp"
+        android:gravity="center_horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="start">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Selamat pagi,"
+                android:textSize="12sp"
+                android:textColor="#CCFFFFFF"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aisyah ✨"
+                android:textSize="20sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="serif"/>
+        </LinearLayout>
+
+        <!-- Cycle ring + phase badge -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="20dp">
+
+            <!-- Ring Container -->
+            <FrameLayout
+                android:layout_width="160dp"
+                android:layout_height="160dp">
+
+                <!-- Background Circle & Active Ring using custom drawable -->
+                <!-- Style diubah ke progressBarStyleHorizontal agar tidak "muter" terus -->
+                <ProgressBar
+                    android:id="@+id/cycleRing"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="64"
+                    android:progressDrawable="@drawable/circular_progress_drawable" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="18"
+                        android:textSize="48sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hari ke-18"
+                        android:textSize="14sp"
+                        android:textColor="#EEFFFFFF"/>
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- Phase Badge -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🌸 Fase Luteal"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:background="@drawable/badge_white_trans"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
+                android:layout_marginTop="24dp"/>
+        </LinearLayout>
+
+        <!-- Stats row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
+
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                <TextView android:text="28" android:textSize="16sp" android:textStyle="bold"
+                    android:textColor="#FFFFFF" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <TextView android:text="Panjang Siklus" android:textSize="9sp"
+                    android:textColor="#CCFFFFFF" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                <TextView android:text="10" android:textSize="16sp" android:textStyle="bold"
+                    android:textColor="#FFFFFF" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <TextView android:text="Hari Tersisa" android:textSize="9sp"
+                    android:textColor="#CCFFFFFF" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                <TextView android:text="10 Mar" android:textSize="16sp" android:textStyle="bold"
+                    android:textColor="#FFFFFF" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <TextView android:text="Berikutnya" android:textSize="9sp"
+                    android:textColor="#CCFFFFFF" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Body scrollable -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="14dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Quick Access Grid (2x2) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AKSES CEPAT"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_muted"
+                android:letterSpacing="0.08"
+                android:layout_marginBottom="8dp"/>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="2"
+                android:useDefaultMargins="true">
+
+                <!-- Log Harian -->
+                <LinearLayout android:id="@+id/cardLogHarian"
+                    android:layout_width="0dp" android:layout_height="80dp"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical" android:gravity="center"
+                    android:background="@drawable/bg_card" android:padding="10dp"
+                    android:layout_margin="4dp">
+                    <TextView android:text="📋" android:textSize="22sp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Log Harian" android:textSize="11sp" android:textStyle="bold"
+                        android:textColor="@color/primary_text"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Catat mood &amp; gejala" android:textSize="9sp"
+                        android:textColor="@color/primary_muted" android:gravity="center"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Smart Food -->
+                <LinearLayout android:id="@+id/cardSmartFood"
+                    android:layout_width="0dp" android:layout_height="80dp"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical" android:gravity="center"
+                    android:background="@drawable/bg_card" android:padding="10dp"
+                    android:layout_margin="4dp">
+                    <TextView android:text="🥗" android:textSize="22sp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Smart Food" android:textSize="11sp" android:textStyle="bold"
+                        android:textColor="@color/primary_text"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Rekomendasi fase Luteal" android:textSize="9sp"
+                        android:textColor="@color/primary_muted" android:gravity="center"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Education -->
+                <LinearLayout android:id="@+id/cardEdukasi"
+                    android:layout_width="0dp" android:layout_height="80dp"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical" android:gravity="center"
+                    android:background="@drawable/bg_card" android:padding="10dp"
+                    android:layout_margin="4dp">
+                    <TextView android:text="📚" android:textSize="22sp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Edukasi" android:textSize="11sp" android:textStyle="bold"
+                        android:textColor="@color/primary_text"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Literasi kesehatan hormonal" android:textSize="9sp"
+                        android:textColor="@color/primary_muted" android:gravity="center"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- Partner Sync -->
+                <LinearLayout android:id="@+id/cardPartnerSync"
+                    android:layout_width="0dp" android:layout_height="80dp"
+                    android:layout_columnWeight="1"
+                    android:orientation="vertical" android:gravity="center"
+                    android:background="@drawable/bg_card" android:padding="10dp"
+                    android:layout_margin="4dp">
+                    <TextView android:text="💞" android:textSize="22sp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Partner Sync" android:textSize="11sp" android:textStyle="bold"
+                        android:textColor="@color/primary_text"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Bagikan status ke pasangan" android:textSize="9sp"
+                        android:textColor="@color/primary_muted" android:gravity="center"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </GridLayout>
+
+            <!-- Rekomendasi Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:layout_marginTop="10dp">
+
+                <TextView android:text="💡 Rekomendasi Hari Ini"
+                    android:textSize="11sp" android:textStyle="bold"
+                    android:textColor="@color/primary_text"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:text="🥛" android:textSize="16sp"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:layout_marginStart="8dp">
+                        <TextView android:text="Nutrisi" android:textSize="10sp" android:textStyle="bold"
+                            android:textColor="@color/primary"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:text="Konsumsi kalsium &amp; magnesium untuk meredakan gejala PMS"
+                            android:textSize="9sp" android:textColor="@color/primary_muted"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:elevation="8dp">
+
+        <!-- Beranda (active) -->
+        <LinearLayout android:id="@+id/navBeranda"
+            android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:orientation="vertical"
+            android:gravity="center" android:padding="4dp">
+            <TextView android:text="🏠" android:textSize="18sp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:text="Beranda" android:textSize="8sp"
+                android:textColor="@color/primary" android:textStyle="bold"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Siklus -->
+        <LinearLayout android:id="@+id/navSiklus"
+            android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:orientation="vertical"
+            android:gravity="center" android:padding="4dp">
+            <TextView android:text="📅" android:textSize="18sp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:text="Siklus" android:textSize="8sp"
+                android:textColor="@color/primary_muted"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Log (center FAB) -->
+        <LinearLayout android:id="@+id/navLog"
+            android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:orientation="vertical"
+            android:gravity="center" android:padding="4dp">
+            <LinearLayout android:layout_width="44dp" android:layout_height="44dp"
+                android:background="@color/primary" android:gravity="center"
+                android:layout_marginBottom="2dp">
+                <TextView android:text="+" android:textSize="22sp" android:textColor="#FFFFFF"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <TextView android:text="Log" android:textSize="8sp"
+                android:textColor="@color/primary_muted"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Food -->
+        <LinearLayout android:id="@+id/navFood"
+            android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:orientation="vertical"
+            android:gravity="center" android:padding="4dp">
+            <TextView android:text="🥗" android:textSize="18sp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:text="Food" android:textSize="8sp"
+                android:textColor="@color/primary_muted"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Edukasi -->
+        <LinearLayout android:id="@+id/navEdukasi"
+            android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:orientation="vertical"
+            android:gravity="center" android:padding="4dp">
+            <TextView android:text="📚" android:textSize="18sp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:text="Edukasi" android:textSize="8sp"
+                android:textColor="@color/primary_muted"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

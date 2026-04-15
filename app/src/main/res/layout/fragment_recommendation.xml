@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_gradient_green"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:paddingTop="44dp"
+            android:paddingBottom="22dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SMART RECOMMENDATIONS" android:textSize="11sp" android:textStyle="bold" android:textColor="#BDFFFFFF" android:letterSpacing="0.1" android:layout_marginBottom="4dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="For You Today" android:textSize="21sp" android:textStyle="bold" android:textColor="@color/white" android:fontFamily="serif" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📍 Ovulation Phase · Day 14" android:textSize="13sp" android:textColor="#D6FFFFFF" android:layout_marginTop="4dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⚡⚡⚡ HIGH ENERGY" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/white" android:background="@drawable/badge_white_trans" android:padding="4dp" android:paddingHorizontal="12dp" android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="14dp">
+
+            <!-- Exercise card -->
+            <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="18dp" app:cardElevation="4dp" app:cardBackgroundColor="#FFF3E0">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💪" android:textSize="30sp" android:layout_marginEnd="10dp" />
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="EXERCISE" android:textSize="10sp" android:textStyle="bold" android:textColor="#FF6F00" android:letterSpacing="0.1" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HIIT Training" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Peak energy and strength! High-intensity interval training, weight lifting, team sports. Best time to push your limits." android:textSize="12sp" android:textColor="@color/text_muted" android:lineSpacingMultiplier="1.5" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Nutrition card -->
+            <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="18dp" app:cardElevation="4dp" app:cardBackgroundColor="#E8F5E9">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🥩" android:textSize="30sp" android:layout_marginEnd="10dp" />
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="NUTRITION" android:textSize="10sp" android:textStyle="bold" android:textColor="#2E7D32" android:letterSpacing="0.1" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="High Protein Foods" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chicken, fish, eggs, tofu, legumes. Support muscle recovery and hormone balance during peak performance phase." android:textSize="12sp" android:textColor="@color/text_muted" android:lineSpacingMultiplier="1.5" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Self care card -->
+            <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" app:cardCornerRadius="18dp" app:cardElevation="4dp" app:cardBackgroundColor="#EDE7F6">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🌸" android:textSize="30sp" android:layout_marginEnd="10dp" />
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SELF CARE" android:textSize="10sp" android:textStyle="bold" android:textColor="#4527A0" android:letterSpacing="0.1" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Social &amp; Creative" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Social activities, creative projects, networking. Your communication skills are at their peak right now!" android:textSize="12sp" android:textColor="@color/text_muted" android:lineSpacingMultiplier="1.5" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Tip card -->
+            <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:cardCornerRadius="16dp" app:cardElevation="4dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_pink_gradient_light" android:padding="14dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💡 PHASE INSIGHT" android:textSize="10sp" android:textStyle="bold" android:textColor="#880E4F" android:letterSpacing="0.1" android:layout_marginBottom="5dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ovulation phase brings peak confidence and communication skills. Great time for important meetings, presentations, and social events." android:textSize="12sp" android:textColor="@color/text_primary" android:lineSpacingMultiplier="1.55" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
