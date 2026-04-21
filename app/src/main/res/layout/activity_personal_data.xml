@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_main">
+
+    <!-- Progress bar 25% -->
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:progress="25"
+        android:progressTint="@color/primary"
+        android:backgroundTint="#FFE4E9"/>
+
+    <!-- Header blush -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="16dp">
+
+        <!-- Step pill -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LANGKAH 1 DARI 4"
+            android:textSize="9sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:background="@drawable/bg_pill_pink"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:letterSpacing="0.05"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mari saling mengenal"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary_text"
+            android:fontFamily="serif"
+            android:layout_marginTop="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Data ini membantu kami menghitung siklus biologis Anda dengan lebih akurat."
+            android:textSize="13sp"
+            android:textColor="@color/primary_muted"
+            android:layout_marginTop="6dp"/>
+    </LinearLayout>
+
+    <!-- Body -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="8dp">
+
+            <!-- Nama Panggilan -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nama Panggilan"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"/>
+            <EditText
+                android:id="@+id/etNickname"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_card"
+                android:hint="Siapa nama panggilanmu?"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Tanggal Lahir -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tanggal Lahir"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"/>
+            <TextView
+                android:id="@+id/tvDob"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_card"
+                android:text="Pilih tanggal lahir"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:textColor="@color/primary_muted"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Status Pernikahan (RadioGroup) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Status Pernikahan"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"/>
+            <RadioGroup
+                android:id="@+id/rgMaritalStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp">
+                <RadioButton android:id="@+id/rbSingle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Belum Menikah" android:textSize="13sp" android:layout_marginEnd="16dp"/>
+                <RadioButton android:id="@+id/rbMarried" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Menikah" android:textSize="13sp"/>
+            </RadioGroup>
+
+            <!-- Tinggi & Berat (row) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tinggi (cm)" android:textSize="12sp" android:textStyle="bold" android:textColor="@color/primary_text"/>
+                    <EditText android:id="@+id/etHeight" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="8dp" android:background="@drawable/bg_card" android:inputType="number" android:paddingHorizontal="16dp" android:textSize="14sp" android:hint="cm"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Berat (kg)" android:textSize="12sp" android:textStyle="bold" android:textColor="@color/primary_text"/>
+                    <EditText android:id="@+id/etWeight" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="8dp" android:background="@drawable/bg_card" android:inputType="number" android:paddingHorizontal="16dp" android:textSize="14sp" android:hint="kg"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Lanjutkan"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/primary"/>
+    </LinearLayout>
+
+</LinearLayout>
