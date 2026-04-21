@@ -4,16 +4,21 @@ import java.util.Calendar
 
 class PredictCycleUseCase {
 
-    fun calculateAverageCycle(cycles: List<Int>): Int {
-        if (cycles.isEmpty()) return 28
-        if (cycles.any { it <= 0 }) return 28
+    fun predictNextPeriod(
+        lastPeriod: Calendar,
+        cycleHistory: List<Int>
+    ): Calendar {
 
-        return cycles.sum() / cycles.size
-    }
+        if (cycleHistory.isEmpty()) {
+            throw IllegalArgumentException("Cycle history tidak boleh kosong")
+        }
 
-    fun predictNextPeriod(lastPeriod: Calendar, averageCycle: Int): Calendar {
-        val result = lastPeriod.clone() as Calendar
-        result.add(Calendar.DAY_OF_MONTH, averageCycle)
-        return result
+        // Moving Average
+        val averageCycle = cycleHistory.average().toInt()
+
+        val nextPeriod = lastPeriod.clone() as Calendar
+        nextPeriod.add(Calendar.DAY_OF_MONTH, averageCycle)
+
+        return nextPeriod
     }
 }

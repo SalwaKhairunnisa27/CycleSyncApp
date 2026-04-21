@@ -1,26 +1,45 @@
 package com.example.cyclesyncapp.domain.usecase
 
 import java.util.Calendar
-import com.example.cyclesyncapp.domain.model.CyclePredictionResult
+
+data class CyclePredictionResult(
+    val nextPeriod: Calendar,
+    val fertileStart: Calendar,
+    val fertileEnd: Calendar,
+    val ovulationDay: Calendar
+)
 
 class GetCyclePredictionUseCase(
-    private val predictUseCase: PredictCycleUseCase,
-    private val fertileUseCase: CalculateFertileWindowUseCase
+    private val predictCycleUseCase: PredictCycleUseCase = PredictCycleUseCase(),
+    private val fertileUseCase: CalculateFertileWindowUseCase = CalculateFertileWindowUseCase()
 ) {
 
-    fun execute(cycles: List<Int>, lastPeriod: Calendar): CyclePredictionResult {
+    fun execute(
+        lastPeriod: Calendar,
+        cycleHistory: List<Int>
+    ): CyclePredictionResult {
 
-        val avg = predictUseCase.calculateAverageCycle(cycles)
-        val nextPeriod = predictUseCase.predictNextPeriod(lastPeriod, avg)
+        require(cycleHistory.isNotEmpty()) {
+            "Cycle history tidak boleh kosong"
+        }
 
+        // Prediksi next period pakai Moving Average
+        val nextPeriod =
+            predictCycleUseCase.predictNextPeriod(lastPeriod, cycleHistory)
+
+        // Hitung masa subur
         val (fertileStart, fertileEnd) =
             fertileUseCase.calculateFertileWindow(nextPeriod)
 
+        // Ovulasi = 14 hari sebelum next period
+        val ovulation = nextPeriod.clone() as Calendar
+        ovulation.add(Calendar.DAY_OF_MONTH, -14)
+
         return CyclePredictionResult(
-            averageCycle = avg,
-            nextPeriodDate = nextPeriod.timeInMillis,
-            fertileStart = fertileStart.timeInMillis,
-            fertileEnd = fertileEnd.timeInMillis
+            nextPeriod = nextPeriod,
+            fertileStart = fertileStart,
+            fertileEnd = fertileEnd,
+            ovulationDay = ovulation
         )
     }
 }
