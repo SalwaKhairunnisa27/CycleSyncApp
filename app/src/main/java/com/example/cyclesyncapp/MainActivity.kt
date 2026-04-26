@@ -2,8 +2,6 @@ package com.example.cyclesyncapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import com.example.cyclesyncapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -12,11 +10,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Menggunakan ViewBinding untuk menghubungkan XML
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navHost = supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
-        val navController = navHost.navController
-        binding.bottomNav.setupWithNavController(navController)
     }
 }
