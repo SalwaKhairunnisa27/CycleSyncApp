@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
-import com.example.cyclesyncapp.MainActivity
+import com.example.cyclesyncapp.ui.activity.MainActivity
 import com.example.cyclesyncapp.databinding.ActivitySetupBinding
 import java.util.*
 
