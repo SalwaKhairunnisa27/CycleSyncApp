@@ -38,7 +38,8 @@
         <activity android:name=".ui.dashboard.DailyLogActivity"/>
         <activity android:name=".ui.calendar.CalendarActivity"/>
 
-        <activity android:name=".ui.activity.MainActivity" />
+        <activity android:name=".MainActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
