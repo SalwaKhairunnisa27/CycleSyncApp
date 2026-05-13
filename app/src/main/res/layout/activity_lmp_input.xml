@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_main">
+
+    <!-- Progress 75% -->
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:progress="75"
+        android:progressTint="@color/primary"
+        android:backgroundTint="#FFE4E9"/>
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LANGKAH 3 DARI 4"
+            android:textSize="9sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:background="@drawable/bg_pill_pink"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:letterSpacing="0.05"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kapan haid terakhirmu dimulai?"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary_text"
+            android:fontFamily="serif"
+            android:layout_marginTop="12dp"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
+
+            <!-- Kalender placeholder -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/white">
+
+                    <CalendarView
+                        android:id="@+id/calendarLmp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:dateTextAppearance="@android:style/TextAppearance.Small"
+                        android:maxDate="2099-01-01"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Panjang siklus rata-rata -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PANJANG SIKLUS RATA-RATA (HARI)"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"/>
+
+            <!-- Segmented buttons panjang siklus -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView android:id="@+id/btn26" android:layout_width="0dp"
+                    android:layout_height="44dp" android:layout_weight="1"
+                    android:text="26" android:textSize="12sp" android:textColor="@color/primary_text"
+                    android:background="@drawable/bg_card" android:gravity="center" android:layout_marginEnd="6dp"/>
+                <TextView android:id="@+id/btn27" android:layout_width="0dp"
+                    android:layout_height="44dp" android:layout_weight="1"
+                    android:text="27" android:textSize="12sp" android:textColor="@color/primary_text"
+                    android:background="@drawable/bg_card" android:gravity="center" android:layout_marginEnd="6dp"/>
+                <TextView android:id="@+id/btn28" android:layout_width="0dp"
+                    android:layout_height="44dp" android:layout_weight="1"
+                    android:text="28 ✓" android:textSize="12sp" android:textColor="@color/primary"
+                    android:background="@drawable/bg_pill_pink" android:gravity="center" android:layout_marginEnd="6dp"/>
+                <TextView android:id="@+id/btn29" android:layout_width="0dp"
+                    android:layout_height="44dp" android:layout_weight="1"
+                    android:text="29" android:textSize="12sp" android:textColor="@color/primary_text"
+                    android:background="@drawable/bg_card" android:gravity="center" android:layout_marginEnd="6dp"/>
+                <TextView android:id="@+id/btn30" android:layout_width="0dp"
+                    android:layout_height="44dp" android:layout_weight="1"
+                    android:text="30" android:textSize="12sp" android:textColor="@color/primary_text"
+                    android:background="@drawable/bg_card" android:gravity="center"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom button -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:padding="24dp">
+        <Button
+            android:id="@+id/btnHitung"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Hitung Siklusku →"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/primary"/>
+    </LinearLayout>
+
+</LinearLayout>

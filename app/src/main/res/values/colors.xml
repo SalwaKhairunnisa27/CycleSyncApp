@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Pink -->
+    <color name="primary">#D4607A</color>
+    <color name="primary_dark">#C94D68</color>
+    <color name="primary_light">#E8899A</color>
+    <color name="primary_soft">#F5C9D3</color>
+    <color name="primary_bg">#FCEEF2</color>
+    <color name="primary_bg2">#F9DDE5</color>
+    <color name="bg_pink_light">#FCEEF2</color>
+    <color name="primary_text">#2C1A20</color>
+    <color name="primary_muted">#8A6470</color>
+
+    <!-- Alias & Missing Colors -->
+    <color name="pink">#D4607A</color>
+    <color name="pink_pale">#F5C9D3</color>
+    <color name="text_primary">#2C1A20</color>
+    <color name="text_muted">#8A6470</color>
+    <color name="test_primary">#2C1A20</color>
+    <color name="bg">#FDF4F7</color>
+
+    <!-- Phase Colors -->
+    <color name="phase_green">#4CAF50</color>
+    <color name="phase_blue">#4A90D9</color>
+    <color name="phase_purple">#7B5EA7</color>
+
+    <!-- Background -->
+    <color name="bg_main">#FDF4F7</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Accent Colors -->
+    <color name="green">#4CAF50</color>
+    <color name="gold">#F4A336</color>
+    <color name="blue">#4A90D9</color>
+    <color name="purple">#7B5EA7</color>
+
+    <!-- Splash gradient start & end -->
+    <color name="splash_grad_start">#C94D68</color>
+    <color name="splash_grad_end">#E8899A</color>
+</resources>
