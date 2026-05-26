@@ -68,22 +68,32 @@ class DailyLogActivity : AppCompatActivity() {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val symptomsString = selectedSymptoms.joinToString(", ")
 
+        // [LOGIKA ARINI] Gabungkan semua data log menjadi satu pesan untuk dienkripsi
+        val fullNote = "Mood: $selectedMood, Gejala: $symptomsString, Energi: $selectedEnergy/5, Status: $selectedStatusHaid"
+
+        // Enkripsi teksnya
+        val encryptedData = com.example.cyclesyncapp.data.security.EncryptionManager.encrypt(fullNote)
+
         val newLog = DailyLogEntity(
             date = currentDate,
-            mood = selectedMood,
-            symptoms = symptomsString,
-            notes = "Energi: $selectedEnergy/5, Status: $selectedStatusHaid"
+            encryptedNote = encryptedData,
+            phase = "UNKNOWN" // Kamu bisa mengoper fase dari Dashboard jika perlu
         )
 
         lifecycleScope.launch {
             try {
                 database.dailyLogDao().insertLog(newLog)
-                Toast.makeText(this@DailyLogActivity, "Log Berhasil Disimpan!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@DailyLogActivity, "Log Berhasil Disimpan & Terenkripsi!", Toast.LENGTH_SHORT).show()
                 finish()
             } catch (e: Exception) {
                 Log.e("DATABASE_ERROR", "Gagal simpan log: ${e.message}")
             }
         }
+        println("ARINI_DEBUG: Log harian terenkripsi berhasil disimpan!")
+        println("ARINI_PROOF - Teks Asli: $fullNote")
+        println("ARINI_PROOF - Teks Terenkripsi: $encryptedData")
+
+
     }
 
     // Kode setupMood, setupEnergy, setupStatusHaid tetap sama seperti sebelumnya...

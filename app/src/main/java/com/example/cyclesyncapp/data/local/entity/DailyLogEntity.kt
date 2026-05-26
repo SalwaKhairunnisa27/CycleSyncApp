@@ -7,8 +7,7 @@ import androidx.room.PrimaryKey
 data class DailyLogEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val date: String,    // Format: YYYY-MM-DD
-    val mood: String,
-    val symptoms: String,
-    val notes: String?
+    val date: String,      // Format: yyyy-MM-dd
+    val encryptedNote: String, // Teks acak hasil enkripsi
+    val phase: String      // Fase saat catatan dibuat
 )

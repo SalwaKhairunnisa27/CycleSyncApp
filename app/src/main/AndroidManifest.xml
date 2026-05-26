@@ -27,6 +27,9 @@
         <activity android:name=".ui.auth.SignUpActivity"/>
         <activity android:name=".ui.auth.LoginActivity"/>
 
+        <!-- Halaman Setup -->
+        <activity android:name=".ui.setup.SetupActivity"/>
+
         <!-- Onboarding (urutan flow) -->
         <activity android:name=".ui.onboarding.PersonalDataActivity"/>
         <activity android:name=".ui.onboarding.GoalSelectionActivity"/>
