@@ -25,7 +25,7 @@ class DailyLogActivity : AppCompatActivity() {
     private var selectedMood: String = ""
     private var selectedEnergy: Int = 0
     private var selectedStatusHaid: String = ""
-    private val selectedSymptoms = mutableSetOf<String>() // Pake Set biar gak dobel
+    private val selectedSymptoms = mutableSetOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +35,7 @@ class DailyLogActivity : AppCompatActivity() {
 
         setupMoodSelectors()
         setupEnergySelectors()
-        setupGejalaSelectors() // Ini yang kita perbaiki
+        setupGejalaSelectors()
         setupStatusHaidSelectors()
 
         findViewById<Button>(R.id.btnSaveLog).setOnClickListener {
@@ -48,7 +48,7 @@ class DailyLogActivity : AppCompatActivity() {
         for (i in 0 until chipGroup.childCount) {
             val chip = chipGroup.getChildAt(i) as? Chip
             chip?.apply {
-                isCheckable = true // Paksa chip bisa dicentang
+                isCheckable = true
                 setOnCheckedChangeListener { _, isChecked ->
                     if (isChecked) {
                         selectedSymptoms.add(text.toString())
@@ -68,16 +68,20 @@ class DailyLogActivity : AppCompatActivity() {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val symptomsString = selectedSymptoms.joinToString(", ")
 
-        // [LOGIKA ARINI] Gabungkan semua data log menjadi satu pesan untuk dienkripsi
+        // Gabungkan semua data log menjadi satu pesan untuk dienkripsi
         val fullNote = "Mood: $selectedMood, Gejala: $symptomsString, Energi: $selectedEnergy/5, Status: $selectedStatusHaid"
 
         // Enkripsi teksnya
         val encryptedData = com.example.cyclesyncapp.data.security.EncryptionManager.encrypt(fullNote)
 
+        // Ambil fase dari SharedPreferences yang disimpan oleh DashboardActivity
+        val prefs = getSharedPreferences("cyclesync_prefs", MODE_PRIVATE)
+        val currentPhase = prefs.getString("current_phase", "UNKNOWN") ?: "UNKNOWN"
+
         val newLog = DailyLogEntity(
             date = currentDate,
             encryptedNote = encryptedData,
-            phase = "UNKNOWN" // Kamu bisa mengoper fase dari Dashboard jika perlu
+            phase = currentPhase // Sekarang menggunakan data aktual dari prediksi
         )
 
         lifecycleScope.launch {
@@ -89,14 +93,8 @@ class DailyLogActivity : AppCompatActivity() {
                 Log.e("DATABASE_ERROR", "Gagal simpan log: ${e.message}")
             }
         }
-        println("ARINI_DEBUG: Log harian terenkripsi berhasil disimpan!")
-        println("ARINI_PROOF - Teks Asli: $fullNote")
-        println("ARINI_PROOF - Teks Terenkripsi: $encryptedData")
-
-
     }
 
-    // Kode setupMood, setupEnergy, setupStatusHaid tetap sama seperti sebelumnya...
     private fun setupMoodSelectors() {
         val moods = listOf(
             Triple(findViewById<LinearLayout>(R.id.moodBahagia), findViewById<View>(R.id.bgMoodBahagia), "Bahagia"),
