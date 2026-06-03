@@ -32,7 +32,10 @@ class GoalSelectionActivity : AppCompatActivity() {
         }
 
         btnLanjut.setOnClickListener {
-            // Assuming LmpInputActivity exists or will be created
+            // Save to SharedPreferences
+            val prefs = getSharedPreferences("cyclesync_prefs", MODE_PRIVATE)
+            prefs.edit().putString("goal", selectedGoal).apply()
+
             val intent = Intent(this, LmpInputActivity::class.java)
             intent.putExtra("goal", selectedGoal)
             startActivity(intent)
