@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg">
+    android:background="@color/bg"
+    android:scrollbarThumbHorizontal="@null"
+    android:scrollbarThumbVertical="@null">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,35 +16,40 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_gradient_pink"
+            android:background="@color/primary"
             android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="48dp"
-            android:paddingBottom="28dp"
-            android:paddingHorizontal="24dp">
+            android:paddingHorizontal="24dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="20dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="⚙️"
-                android:textSize="32sp" />
+                android:text="⚙️ LANGKAH 4 DARI 4"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary"
+                android:background="@drawable/bg_pill_pink"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:letterSpacing="0.05"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Setup Your Cycle"
-                android:textSize="21sp"
+                android:text="Atur Pengingat &amp; Preferensi"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 android:fontFamily="serif"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Personalize your experience"
-                android:textSize="13sp"
-                android:textColor="#D6FFFFFF"
+                android:text="Langkah terakhir untuk mengoptimalkan pelacakanmu 🌸"
+                android:textSize="12sp"
+                android:textColor="#EEFFFFFF"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
@@ -53,190 +60,338 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Card: Last Period Date -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NOTIFIKASI AKTIF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_muted"
+                android:letterSpacing="0.05"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Daily Log Toggle Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="4dp">
-
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="14dp">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🌙 Log Harian"
+                            android:textStyle="bold"
+                            android:textColor="@color/primary_text"
+                            android:textSize="13sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Setiap pukul 21.00 — catat mood &amp; gejala"
+                            android:textColor="@color/primary_muted"
+                            android:textSize="10sp"
+                            android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchDailyLog"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Last Period Start Date"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
-
-                    <TextView
-                        android:id="@+id/tvSelectedDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Tap to select date"
-                        android:textSize="17sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/pink"
-                        android:background="@color/pink_pale"
-                        android:padding="12dp"
-                        android:gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp" />
-
-                    <Button
-                        android:id="@+id/btnPickDate"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="📅 Choose Date"
-                        android:textColor="@color/pink"
-                        app:backgroundTint="@color/white" />
+                        android:checked="true"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Card: Cycle Length -->
+            <!-- Period Reminder Toggle Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="4dp">
-
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="14dp">
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_weight="1"
+                        android:orientation="vertical">
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Cycle Length"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary" />
-                        <TextView
-                            android:id="@+id/tvCycleLength"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="28 days"
-                            android:textSize="13sp"
+                            android:text="📅 Pengingat Haid"
                             android:textStyle="bold"
-                            android:textColor="@color/pink" />
+                            android:textColor="@color/primary_text"
+                            android:textSize="13sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="H-3 sebelum tanggal prediksi haid"
+                            android:textColor="@color/primary_muted"
+                            android:textSize="10sp"
+                            android:layout_marginTop="2dp"/>
                     </LinearLayout>
-
-                    <SeekBar
-                        android:id="@+id/seekCycleLength"
-                        android:layout_width="match_parent"
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchPeriod"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:min="21"
-                        android:max="35"
-                        android:progress="28"
-                        android:layout_marginTop="8dp" />
+                        android:checked="true"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Card: Period Duration -->
+            <!-- Fertile Toggle Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="4dp">
-
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="14dp">
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_weight="1"
+                        android:orientation="vertical">
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Period Duration"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary" />
-                        <TextView
-                            android:id="@+id/tvPeriodDuration"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="5 days"
-                            android:textSize="13sp"
+                            android:text="🌸 Masa Subur"
                             android:textStyle="bold"
-                            android:textColor="@color/pink" />
+                            android:textColor="@color/primary_text"
+                            android:textSize="13sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="H-2 &amp; hari puncak ovulasi"
+                            android:textColor="@color/primary_muted"
+                            android:textSize="10sp"
+                            android:layout_marginTop="2dp"/>
                     </LinearLayout>
-
-                    <SeekBar
-                        android:id="@+id/seekPeriodDuration"
-                        android:layout_width="match_parent"
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchFertile"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:min="2"
-                        android:max="9"
-                        android:progress="5"
-                        android:layout_marginTop="8dp" />
+                        android:checked="true"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Card: Goal -->
+            <!-- Supplement Toggle Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="4dp">
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="14dp">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💊 Pengingat Suplemen"
+                            android:textStyle="bold"
+                            android:textColor="@color/primary_text"
+                            android:textSize="13sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pagi hari sesuai dengan fase aktif"
+                            android:textColor="@color/primary_muted"
+                            android:textSize="10sp"
+                            android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchSupplement"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PARTNER SYNC (OPSIONAL)"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_muted"
+                android:letterSpacing="0.05"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Partner Sync Setup Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="14dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:background="@drawable/bg_pill_pink"
+                            android:gravity="center"
+                            android:text="💞"
+                            android:textSize="16sp"/>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="10dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hubungkan Pasangan"
+                                android:textStyle="bold"
+                                android:textColor="@color/primary_text"
+                                android:textSize="12sp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Masukkan nama &amp; no. WhatsApp pasangan"
+                                android:textColor="@color/primary_muted"
+                                android:textSize="10sp"/>
+                        </LinearLayout>
+                    </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="My Primary Goal"
-                        android:textSize="13sp"
+                        android:text="Nama Pasangan"
+                        android:textSize="9sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary"
-                        android:layout_marginBottom="10dp" />
-
-                    <RadioGroup android:id="@+id/rgGoal"
+                        android:textColor="@color/primary_muted"
+                        android:layout_marginBottom="4dp"/>
+                    <EditText
+                        android:id="@+id/etSetupPartnerName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <RadioButton android:id="@+id/rbTrackCycle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔄 Track my cycle" android:textSize="14sp" />
-                        <RadioButton android:id="@+id/rbConceive" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🤱 Trying to conceive" android:textSize="14sp" />
-                        <RadioButton android:id="@+id/rbHealth" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💪 Optimize my health" android:textSize="14sp" />
-                        <RadioButton android:id="@+id/rbAvoid" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🛡️ Natural family planning" android:textSize="14sp" />
-                    </RadioGroup>
+                        android:layout_height="44dp"
+                        android:hint="cth: Rizky Sayang 💕"
+                        android:background="@drawable/bg_card"
+                        android:paddingHorizontal="12dp"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="12dp"
+                        android:inputType="textPersonName"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No. WhatsApp"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary_muted"
+                        android:layout_marginBottom="4dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_card"
+                            android:gravity="center"
+                            android:paddingHorizontal="12dp"
+                            android:text="🇮🇩 +62"
+                            android:textStyle="bold"
+                            android:textColor="@color/primary_muted"
+                            android:textSize="13sp"
+                            android:layout_marginEnd="6dp"/>
+                        <EditText
+                            android:id="@+id/etSetupPartnerPhone"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:hint="812-3456-7890"
+                            android:background="@drawable/bg_card"
+                            android:paddingHorizontal="12dp"
+                            android:textSize="13sp"
+                            android:inputType="phone"/>
+                    </LinearLayout>
+
+                    <!-- Preview box -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PREVIEW PESAN"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary_muted"
+                        android:layout_marginBottom="4dp"/>
+                    <TextView
+                        android:id="@+id/tvSetupPreviewMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#DCF8C6"
+                        android:textColor="#1A1A1A"
+                        android:padding="10dp"
+                        android:textSize="11sp"
+                        android:lineSpacingExtra="3dp"
+                        android:layout_marginBottom="12dp"
+                        android:text="CycleSync Update dari Aisyah 🌸\n\nHai sayang, FYI aku lagi di fase Luteal nih.\nMoodku lagi Tenang 😌, energi Sedang.\n\n_Pesan otomatis dari CycleSync_"/>
+
+                    <Button
+                        android:id="@+id/btnSetupSavePartner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="💾 Simpan Kontak Pasangan"
+                        android:textSize="12sp"
+                        android:backgroundTint="@color/primary"
+                        android:textColor="@color/white"
+                        android:textAllCaps="false"/>
+
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Bottom Start Button -->
             <Button
                 android:id="@+id/btnStartJourney"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Start My Journey 🌸"
-                android:textSize="16sp"
+                android:text="Selesai — Lihat Dashboard 🎉"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
-                app:backgroundTint="@color/pink" />
+                app:backgroundTint="@color/primary"
+                android:textAllCaps="false"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -5,8 +5,9 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.cyclesyncapp.MainActivity
 import com.example.cyclesyncapp.R
+import com.example.cyclesyncapp.ui.dashboard.DashboardActivity // Import Dashboard
+import com.example.cyclesyncapp.ui.setup.SetupActivity // Import Setup
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,12 +15,11 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         findViewById<Button>(R.id.btnGetStarted).setOnClickListener {
-            // Kita arahkan langsung ke MainActivity agar bisa cek UI & Logic
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, com.example.cyclesyncapp.ui.auth.SignUpActivity::class.java))
         }
 
         findViewById<TextView>(R.id.tvLoginLink).setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, com.example.cyclesyncapp.ui.auth.LoginActivity::class.java))
         }
     }
 }

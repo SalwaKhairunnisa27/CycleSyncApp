@@ -7,20 +7,23 @@ import androidx.room.RoomDatabase
 import com.example.cyclesyncapp.data.local.dao.CycleDao
 import com.example.cyclesyncapp.data.local.dao.DailyLogDao
 import com.example.cyclesyncapp.data.local.dao.EducationDao
-import com.example.cyclesyncapp.data.local.dao.UserDao // Import baru
+import com.example.cyclesyncapp.data.local.dao.UserDao
+import com.example.cyclesyncapp.data.local.dao.RecommendationDao // Import baru
 import com.example.cyclesyncapp.data.local.entity.CycleEntity
 import com.example.cyclesyncapp.data.local.entity.DailyLogEntity
 import com.example.cyclesyncapp.data.local.entity.EducationEntity
-import com.example.cyclesyncapp.data.local.entity.UserEntity // Import baru
+import com.example.cyclesyncapp.data.local.entity.UserEntity
+import com.example.cyclesyncapp.data.local.entity.RecommendationEntity // Import baru
 
 @Database(
     entities = [
         CycleEntity::class,
         EducationEntity::class,
         DailyLogEntity::class,
-        UserEntity::class // Daftarkan User (baru)
+        UserEntity::class,
+        RecommendationEntity::class // Tambahkan ini
     ],
-    version = 1,
+    version = 3,
     exportSchema = false
 )
 abstract class CycleDatabase : RoomDatabase() {
@@ -28,7 +31,8 @@ abstract class CycleDatabase : RoomDatabase() {
     abstract fun cycleDao(): CycleDao
     abstract fun educationDao(): EducationDao
     abstract fun dailyLogDao(): DailyLogDao
-    abstract fun userDao(): UserDao // Tambahan
+    abstract fun userDao(): UserDao
+    abstract fun recommendationDao(): RecommendationDao // Tambahkan ini
 
     companion object {
         @Volatile
@@ -41,8 +45,8 @@ abstract class CycleDatabase : RoomDatabase() {
                     CycleDatabase::class.java,
                     "cycle_sync_db"
                 )
-                    .createFromAsset("databases/education.db")
-                    .fallbackToDestructiveMigration()
+                    .createFromAsset("databases/education.db") // Pastikan database awal punya data rekomendasi jika ingin pre-populated
+                    .fallbackToDestructiveMigration() // Hati-hati: ini akan menghapus data lama jika versi naik
                     .build()
                 INSTANCE = instance
                 instance

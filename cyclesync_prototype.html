@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CycleSync — Interactive Prototype</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --p: #D4607A; --pr: #C94D68; --pl: #E8899A; --ps: #F5C9D3;
+  --pb: #FCEEF2; --pb2: #F9DDE5; --pt: #2C1A20; --pm: #8A6470;
+  --bg: #FDF4F7; --white: #FFFFFF;
+  --green: #4CAF50; --gold: #F4A336; --blue: #4A90D9;
+  --shadow: 0 20px 60px rgba(212,96,122,0.15), 0 4px 16px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: linear-gradient(135deg, #F9E8EE 0%, #FDF4F7 40%, #F0E4ED 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 12px 48px;
+}
+
+/* ─── HEADER ─── */
+.app-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.app-header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  color: var(--pr);
+  letter-spacing: 0.3px;
+}
+.app-header p {
+  font-size: 12px;
+  color: var(--pm);
+  margin-top: 4px;
+}
+.screen-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--pm);
+  font-weight: 500;
+}
+.screen-indicator .cur { color: var(--pr); font-weight: 600; }
+
+/* ─── PHONE FRAME ─── */
+.phone-wrap {
+  position: relative;
+  width: 360px;
+  max-width: 100%;
+}
+.phone-frame {
+  width: 360px;
+  background: #1C1C1E;
+  border-radius: 52px;
+  padding: 12px;
+  box-shadow: var(--shadow), 0 0 0 1px rgba(0,0,0,0.1);
+  max-width: 100%;
+}
+.phone-screen {
+  background: var(--bg);
+  border-radius: 42px;
+  height: 720px;
+  overflow: hidden;
+  position: relative;
+}
+.notch {
+  width: 90px; height: 22px;
+  background: #1C1C1E;
+  border-radius: 0 0 16px 16px;
+  position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--pt);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 99;
+}
+.status-bar.white { color: white; }
+
+/* ─── SCREEN SYSTEM ─── */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateX(30px);
+  overflow: hidden;
+}
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+.screen.exit {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* ─── COMMON COMPONENTS ─── */
+.prog-bar { height: 3px; background: var(--ps); flex-shrink: 0; }
+.prog-fill { height: 100%; background: var(--p); border-radius: 2px; transition: width 0.4s ease; }
+
+.screen-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: none;
+}
+.screen-body::-webkit-scrollbar { display: none; }
+
+.section-header {
+  padding: 22px 18px 12px;
+  flex-shrink: 0;
+}
+.section-header.pink { background: var(--p); }
+.section-header.gradient { background: linear-gradient(145deg, var(--pr) 0%, var(--p) 55%, var(--pl) 100%); }
+.section-header.blush { background: var(--pb2); border-bottom: 0.5px solid var(--ps); }
+.section-header.white { background: white; border-bottom: 0.5px solid var(--ps); }
+
+.sh-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,0.25); color: white;
+  font-size: 9px; font-weight: 600; padding: 3px 9px; border-radius: 12px;
+  margin-bottom: 5px;
+}
+.sh-tag.pink { background: var(--p); color: white; }
+.sh-tag.blush { background: var(--pb); color: var(--p); }
+.sh-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: white; line-height: 1.3; }
+.sh-title.dark { color: var(--pt); font-size: 15px; }
+.sh-sub { font-size: 10px; color: rgba(255,255,255,0.82); margin-top: 3px; line-height: 1.4; }
+.sh-sub.dark { color: var(--pm); }
+
+.step-pill {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: var(--pb); color: var(--p);
+  font-size: 9px; font-weight: 700; padding: 3px 9px; border-radius: 12px;
+  margin-bottom: 4px;
+}
+.sq { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--pt); line-height: 1.35; }
+
+/* ─── FORM ELEMENTS ─── */
+.inp-group { display: flex; flex-direction: column; gap: 3px; }
+.inp-label { font-size: 9px; font-weight: 600; color: var(--pm); text-transform: uppercase; letter-spacing: 0.4px; }
+.inp-field {
+  background: white; border: 1.5px solid var(--ps); border-radius: 10px;
+  padding: 9px 12px; font-size: 12px; color: var(--pt);
+  font-family: 'DM Sans', sans-serif;
+}
+.inp-field.active { border-color: var(--p); }
+.inp-field.placeholder { color: #C5A8B0; }
+.inp-row { display: flex; gap: 8px; }
+
+.seg-row { display: flex; gap: 5px; }
+.seg-btn {
+  flex: 1; padding: 7px 5px; border-radius: 9px;
+  border: 1.5px solid var(--ps); text-align: center;
+  font-size: 10px; color: var(--pm); background: white; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-weight: 500;
+  transition: all 0.15s;
+}
+.seg-btn.active { border-color: var(--p); background: var(--pb); color: var(--p); font-weight: 700; }
+.seg-btn:hover { border-color: var(--pl); }
+
+/* ─── BUTTONS ─── */
+.btn-primary {
+  background: var(--p); color: white; border: none; border-radius: 14px;
+  padding: 13px; font-size: 13px; font-weight: 600; width: 100%; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: transform 0.1s, background 0.15s;
+  flex-shrink: 0;
+}
+.btn-primary:active { transform: scale(0.97); background: var(--pr); }
+
+.btn-outline {
+  background: transparent; color: var(--p); border: 1.5px solid var(--p);
+  border-radius: 14px; padding: 11px; font-size: 12px; font-weight: 600;
+  width: 100%; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+.btn-outline:active { background: var(--pb); }
+
+.btn-ghost {
+  background: transparent; color: var(--pm); border: none;
+  padding: 8px 0; font-size: 11px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; text-align: center; width: 100%;
+}
+.btn-ghost span { color: var(--p); text-decoration: underline; }
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav {
+  display: flex; background: white;
+  border-top: 0.5px solid var(--ps); padding: 6px 0 14px;
+  flex-shrink: 0;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 2px; cursor: pointer;
+  transition: transform 0.1s;
+}
+.nav-item:active { transform: scale(0.9); }
+.nav-label { font-size: 8px; font-weight: 500; }
+.nav-center-btn {
+  width: 42px; height: 42px; background: var(--p); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: -12px; border: 3px solid var(--bg); flex-shrink: 0;
+}
+
+/* ─── CARDS ─── */
+.card {
+  background: white; border-radius: 14px; padding: 12px 14px;
+  border: 0.5px solid var(--ps);
+}
+.card.accent { border-left: 3px solid var(--p); }
+.card.gold-accent { border-left: 3px solid var(--gold); }
+.card.green-accent { border-left: 3px solid var(--green); }
+
+.card-title { font-size: 11px; font-weight: 700; color: var(--pt); margin-bottom: 8px; }
+.card-sub { font-size: 9px; color: var(--pm); line-height: 1.45; }
+
+.hint-box {
+  background: var(--pb); border-radius: 9px; padding: 8px 10px;
+  font-size: 10px; color: var(--pm); line-height: 1.45;
+  border-left: 2.5px solid var(--p);
+}
+
+/* ─── GOAL CARDS ─── */
+.goal-card {
+  background: white; border-radius: 14px; padding: 12px 14px;
+  border: 2px solid var(--ps); cursor: pointer; transition: all 0.2s;
+}
+.goal-card.selected { border-color: var(--p); background: var(--pb); }
+.goal-card:hover { border-color: var(--pl); }
+.goal-icon-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+.goal-icon {
+  width: 34px; height: 34px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.goal-name { font-size: 12px; font-weight: 700; color: var(--pt); }
+.goal-desc { font-size: 9px; color: var(--pm); line-height: 1.4; margin-top: 2px; }
+.goal-check { width: 18px; height: 18px; border-radius: 50%; background: var(--p); display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; margin-left: auto; flex-shrink: 0; }
+.feat-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+.feat-pill { font-size: 9px; padding: 3px 8px; border-radius: 8px; font-weight: 600; }
+
+/* ─── CALENDAR ─── */
+.cal-wrap { background: white; border-radius: 14px; overflow: hidden; border: 0.5px solid var(--ps); }
+.cal-head { background: var(--p); padding: 9px 12px; display: flex; justify-content: space-between; align-items: center; }
+.cal-month { font-size: 12px; font-weight: 700; color: white; }
+.cal-nav { font-size: 16px; color: rgba(255,255,255,0.85); cursor: pointer; padding: 0 4px; }
+.cal-grid-head { display: grid; grid-template-columns: repeat(7,1fr); padding: 4px 8px 0; }
+.cal-dh { text-align: center; font-size: 9px; font-weight: 700; color: var(--pm); padding: 3px 0; }
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); padding: 3px 8px 8px; gap: 2px; }
+.cal-day { text-align: center; font-size: 10px; padding: 5px 2px; border-radius: 50%; color: var(--pt); cursor: pointer; transition: all 0.1s; }
+.cal-day:hover { background: var(--pb2); }
+.cal-day.selected { background: var(--p); color: white; font-weight: 700; }
+.cal-day.range { background: var(--ps); color: var(--pr); }
+.cal-day.today { background: #C62828; color: white; font-weight: 700; }
+.cal-day.empty { color: transparent; pointer-events: none; }
+.cal-day.period { background: var(--p); color: white; border-radius: 50%; }
+.cal-day.fertile { background: #E8F5E9; color: #2E7D32; border: 1px solid #81C784; }
+.cal-day.ovulation { background: #FFF3E0; color: #E65100; border: 2px solid #FFB74D; font-weight: 700; }
+
+/* ─── PROGRESS RING ─── */
+.ring-wrap { display: flex; justify-content: center; position: relative; margin: 4px 0; }
+.ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+.ring-day { font-size: 28px; font-weight: 700; color: white; line-height: 1; }
+.ring-lbl { font-size: 9px; color: rgba(255,255,255,0.82); }
+
+/* ─── MOOD GRID ─── */
+.mood-grid { display: flex; gap: 6px; justify-content: space-around; }
+.mood-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+.mood-circle {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 2px solid var(--ps); display: flex; align-items: center;
+  justify-content: center; font-size: 20px; background: white;
+  transition: all 0.15s;
+}
+.mood-circle.active { border-color: var(--p); background: var(--pb); transform: scale(1.1); }
+.mood-lbl { font-size: 8px; color: var(--pm); text-align: center; }
+
+/* ─── TOGGLE ─── */
+.toggle-row { display: flex; justify-content: space-between; align-items: center; }
+.tgl { width: 36px; height: 20px; background: var(--ps); border-radius: 10px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+.tgl.on { background: var(--p); }
+.tgl-ball { width: 14px; height: 14px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.tgl.on .tgl-ball { left: 19px; }
+
+/* ─── ENERGY BAR ─── */
+.energy-bar { display: flex; gap: 4px; }
+.e-seg { flex: 1; height: 10px; border-radius: 5px; cursor: pointer; transition: all 0.15s; }
+.e-seg.filled { background: var(--p); }
+.e-seg.empty { background: var(--ps); }
+
+/* ─── FOOD & EXERCISE CARDS ─── */
+.food-card { background: white; border-radius: 14px; padding: 11px 12px; display: flex; gap: 10px; align-items: flex-start; border: 0.5px solid var(--ps); }
+.food-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--pb); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.food-name { font-size: 12px; font-weight: 700; color: var(--pt); }
+.food-why { font-size: 9px; color: var(--pm); margin-top: 2px; line-height: 1.4; }
+.tag-row { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+.tag { font-size: 9px; padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+
+.ex-card { background: white; border-radius: 14px; padding: 11px 12px; border: 0.5px solid var(--ps); }
+.ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.ex-name { font-size: 12px; font-weight: 700; color: var(--pt); }
+.intensity { display: flex; gap: 3px; margin-top: 6px; }
+.int-seg { flex: 1; height: 6px; border-radius: 3px; }
+
+/* ─── ARTICLE CARDS ─── */
+.art-featured { background: linear-gradient(120deg, var(--pr), var(--pl)); border-radius: 14px; padding: 14px; cursor: pointer; }
+.art-card { background: white; border-radius: 14px; padding: 10px 12px; display: flex; gap: 10px; border: 0.5px solid var(--ps); cursor: pointer; }
+.art-thumb { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+
+/* ─── PHASE BADGE ─── */
+.phase-badge {
+  display: inline-block; background: rgba(255,255,255,0.25); color: white;
+  font-size: 11px; font-weight: 700; padding: 5px 16px; border-radius: 20px;
+}
+.phase-badge.dark { background: var(--pb); color: var(--p); }
+
+/* ─── NOTIFICATION ─── */
+.notif-card { display: flex; gap: 8px; align-items: flex-start; background: white; border-radius: 12px; padding: 10px 12px; }
+.notif-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.notif-title { font-size: 11px; font-weight: 700; color: var(--pt); margin-bottom: 2px; }
+.notif-body { font-size: 10px; color: var(--pm); line-height: 1.4; }
+
+/* ─── PARTNER CARD ─── */
+.partner-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--pb2); border: 2.5px dashed var(--p); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+
+/* ─── SYMPTOM CHIPS ─── */
+.chip-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: 500; border: 1.5px solid var(--ps); color: var(--pm); background: white; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+.chip.active { background: var(--p); color: white; border-color: var(--p); }
+.chip:hover { border-color: var(--pl); }
+
+/* ─── TABS ─── */
+.tab-bar { display: flex; background: var(--pb); border-radius: 12px; padding: 4px; margin-bottom: 2px; }
+.tab { flex: 1; padding: 7px; border-radius: 9px; text-align: center; font-size: 10px; font-weight: 600; color: var(--pm); cursor: pointer; transition: all 0.15s; }
+.tab.active { background: var(--p); color: white; }
+
+/* ─── LOADING SCREEN ─── */
+.loading-bg { flex: 1; background: linear-gradient(155deg, var(--pr) 0%, var(--p) 55%, var(--pl) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; gap: 14px; }
+.spinner { width: 56px; height: 56px; border: 3px solid rgba(255,255,255,0.25); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: white; text-align: center; line-height: 1.3; }
+.loading-sub { font-size: 11px; color: rgba(255,255,255,0.82); text-align: center; line-height: 1.6; }
+.check-list { display: flex; flex-direction: column; gap: 7px; width: 100%; }
+.check-item { display: flex; align-items: center; gap: 9px; background: rgba(255,255,255,0.16); border-radius: 10px; padding: 7px 12px; }
+.check-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+.check-text { font-size: 10px; color: white; }
+
+/* ─── SPLASH ─── */
+.splash-bg { flex: 1; background: linear-gradient(160deg, #C94D68 0%, #D4607A 50%, #E8899A 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; gap: 0; }
+.splash-logo { width: 88px; height: 88px; background: rgba(255,255,255,0.2); border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 16px; border: 2.5px solid rgba(255,255,255,0.4); }
+.splash-name { font-family: 'DM Serif Display', serif; font-size: 34px; color: white; letter-spacing: 0.5px; }
+.splash-tag { font-size: 12px; color: rgba(255,255,255,0.85); margin-top: 4px; }
+.splash-divider { width: 48px; height: 2.5px; background: rgba(255,255,255,0.4); border-radius: 2px; margin: 22px 0; }
+.splash-btn { background: white; color: var(--p); border: none; border-radius: 30px; padding: 14px 40px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: transform 0.1s; }
+.splash-btn:active { transform: scale(0.96); }
+.splash-login { font-size: 11px; color: rgba(255,255,255,0.82); margin-top: 14px; cursor: pointer; }
+.splash-login span { text-decoration: underline; }
+
+/* ─── DASHBOARD HERO ─── */
+.dash-hero { background: linear-gradient(145deg, var(--pr) 0%, var(--p) 55%, var(--pl) 100%); padding: 16px 20px 14px; flex-shrink: 0; }
+.dash-greeting { font-size: 11px; color: rgba(255,255,255,0.82); margin-bottom: 2px; }
+.dash-name { font-family: 'DM Serif Display', serif; font-size: 20px; color: white; margin-bottom: 10px; }
+.dash-stats { display: flex; gap: 6px; margin-top: 10px; }
+.dash-stat { flex: 1; background: rgba(255,255,255,0.18); border-radius: 10px; padding: 6px; text-align: center; }
+.dash-stat-v { font-size: 14px; font-weight: 700; color: white; }
+.dash-stat-l { font-size: 8px; color: rgba(255,255,255,0.75); margin-top: 1px; }
+
+/* ─── QUICK GRID ─── */
+.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.quick-card { background: white; border-radius: 12px; padding: 12px; border: 0.5px solid var(--ps); cursor: pointer; transition: all 0.15s; }
+.quick-card:hover { border-color: var(--p); background: var(--pb); }
+.quick-card:active { transform: scale(0.97); }
+.quick-icon { font-size: 20px; margin-bottom: 4px; }
+.quick-title { font-size: 11px; font-weight: 700; color: var(--pt); }
+.quick-sub { font-size: 9px; color: var(--pm); line-height: 1.3; margin-top: 2px; }
+
+/* ─── SECTION LABELS ─── */
+.sec-label { font-size: 10px; font-weight: 700; color: var(--pt); letter-spacing: 0.2px; }
+.sec-label-muted { font-size: 9px; font-weight: 600; color: var(--pm); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ─── PREGNANCY MODE ─── */
+.preg-hero { background: linear-gradient(145deg, #7B5EA7, #9B6EC8, #B88FD8); padding: 16px 20px 14px; flex-shrink: 0; }
+.preg-badge { display: inline-block; background: rgba(255,255,255,0.25); color: white; font-size: 10px; padding: 4px 12px; border-radius: 12px; margin-bottom: 8px; }
+
+/* ─── PARTNER SHARE ─── */
+.share-preview { background: var(--pb2); border-radius: 12px; padding: 12px; border: 0.5px solid var(--ps); }
+.wa-bubble { background: #DCF8C6; border-radius: 12px 12px 12px 3px; padding: 10px 12px; font-size: 10px; color: #1a1a1a; line-height: 1.5; max-width: 90%; }
+
+/* ─── BACK BUTTON ─── */
+.back-btn { display: flex; align-items: center; gap: 4px; color: rgba(255,255,255,0.9); font-size: 13px; cursor: pointer; margin-bottom: 6px; width: fit-content; }
+.back-btn.dark { color: var(--pt); }
+
+/* ─── SEARCH BAR ─── */
+.search-bar { display: flex; align-items: center; gap: 8px; background: var(--pb); border-radius: 12px; padding: 8px 12px; margin-top: 8px; }
+.search-placeholder { font-size: 11px; color: var(--pm); }
+
+/* ─── SOCIAL BTNS ─── */
+.social-row { display: flex; gap: 8px; }
+.social-btn { flex: 1; border: 1.5px solid var(--ps); border-radius: 10px; padding: 8px; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11px; color: var(--pt); font-weight: 600; background: white; cursor: pointer; transition: border-color 0.15s; }
+.social-btn:hover { border-color: var(--p); }
+
+/* ─── DIVIDER ─── */
+.divider-or { display: flex; align-items: center; gap: 8px; font-size: 10px; color: var(--pm); }
+.divider-line { flex: 1; height: 0.5px; background: var(--ps); }
+
+/* ─── MINI CALENDAR STRIP ─── */
+.cal-strip { display: flex; gap: 4px; justify-content: space-between; }
+.cal-strip-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.cal-strip-lbl { font-size: 8px; color: var(--pm); }
+.cal-strip-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
+
+/* ─── SCROLLABLE TABS ─── */
+.scroll-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 6px; scrollbar-width: none; }
+.scroll-tabs::-webkit-scrollbar { display: none; }
+.scroll-tab { padding: 6px 14px; border-radius: 20px; font-size: 10px; font-weight: 600; white-space: nowrap; cursor: pointer; flex-shrink: 0; border: 1.5px solid var(--ps); color: var(--pm); background: white; transition: all 0.15s; }
+.scroll-tab.active { background: var(--p); color: white; border-color: var(--p); }
+
+/* ─── BOTTOM HELPER ─── */
+.bottom-btn-area { padding: 10px 18px 14px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+
+/* ─── LABEL BADGE ─── */
+.lbl-badge { font-size: 8px; font-weight: 700; padding: 2px 8px; border-radius: 8px; }
+
+/* ─── OVERLAY TEXT FOR NAV ─── */
+.nav-pill { font-size: 8px; color: var(--pm); font-weight: 500; }
+.nav-pill.active { color: var(--p); font-weight: 700; }
+
+/* ─── SEPARATORS ─── */
+.sep { height: 0.5px; background: var(--ps); flex-shrink: 0; }
+
+/* ─── PREGNANCY HPL ─── */
+.hpl-card { background: linear-gradient(120deg, #7B5EA7, #B88FD8); border-radius: 14px; padding: 14px; color: white; }
+.hpl-label { font-size: 9px; color: rgba(255,255,255,0.8); }
+.hpl-date { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; }
+.hpl-weeks { font-size: 11px; color: rgba(255,255,255,0.9); margin-top: 2px; }
+
+/* ─── TOAST NOTIFICATION ─── */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: #2C1A20; color: white; padding: 10px 18px;
+  border-radius: 30px; font-size: 11px; font-weight: 500;
+  transition: transform 0.3s; z-index: 999; white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ─── BACK HEADER FOR SUB SCREENS ─── */
+.nav-header { display: flex; align-items: center; gap: 10px; padding: 10px 18px 8px; background: white; border-bottom: 0.5px solid var(--ps); flex-shrink: 0; }
+.nav-header-back { width: 32px; height: 32px; border-radius: 50%; background: var(--pb); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: var(--p); flex-shrink: 0; }
+.nav-header-title { font-size: 14px; font-weight: 700; color: var(--pt); font-family: 'DM Serif Display', serif; }
+.nav-header-sub { font-size: 9px; color: var(--pm); margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>cyclesync</h1>
+  <p>Interactive Prototype — Semua Alur Tersambung</p>
+  <div class="screen-indicator">
+    <span>Layar:</span>
+    <span class="cur" id="screen-label">Splash</span>
+  </div>
+</div>
+
+<div class="phone-wrap">
+  <div class="phone-frame">
+    <div class="phone-screen">
+      <div class="notch"></div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 0: SPLASH
+      ══════════════════════════════════════════ -->
+      <div class="screen active" id="s-splash">
+        <div class="status-bar white" style="position:absolute;top:0;width:100%;z-index:99;background:transparent">
+          <span>9:41</span><span>▲▲ 🔋</span>
+        </div>
+        <div class="splash-bg">
+          <div class="splash-logo">🌸</div>
+          <div class="splash-name">cyclesync</div>
+          <div class="splash-tag">Women's Cycle Tracker</div>
+          <div class="splash-divider"></div>
+          <button class="splash-btn" onclick="goTo('s-signup')">Mulai Sekarang</button>
+          <div class="splash-login">Sudah punya akun? <span onclick="goTo('s-dashboard')">Masuk</span></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 1: SIGN UP
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-signup">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="section-header pink">
+          <div class="sh-title">Buat Akun</div>
+          <div class="sh-sub">Mulai perjalanan kesehatan hormonalmu 🌸</div>
+        </div>
+        <div class="screen-body">
+          <div class="social-row">
+            <div class="social-btn"><span style="font-size:14px;font-weight:900;color:#4285F4">G</span> Google</div>
+            <div class="social-btn"><span style="font-size:13px;font-weight:900;color:#1877F2">f</span> Facebook</div>
+          </div>
+          <div class="divider-or"><div class="divider-line"></div><span>atau</span><div class="divider-line"></div></div>
+          <div class="inp-group">
+            <div class="inp-label">Nama Lengkap</div>
+            <div class="inp-field active">Aisyah Edwan</div>
+          </div>
+          <div class="inp-group">
+            <div class="inp-label">Alamat Email</div>
+            <div class="inp-field active">aisyah@email.com</div>
+          </div>
+          <div class="inp-group">
+            <div class="inp-label">Kata Sandi</div>
+            <div class="inp-field placeholder" style="letter-spacing:3px">••••••••</div>
+          </div>
+          <button class="btn-primary" onclick="goTo('s-personal')">Daftar →</button>
+          <div class="btn-ghost">Sudah punya akun? <span onclick="goTo('s-dashboard')">Masuk di sini</span></div>
+          <p style="font-size:9px;color:var(--pm);text-align:center;line-height:1.5">Dengan mendaftar kamu setuju <span style="color:var(--p)">Syarat & Ketentuan</span> dan <span style="color:var(--p)">Kebijakan Privasi</span></p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 2: DATA PRIBADI (Step 1/4)
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-personal">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:25%"></div></div>
+        <div class="section-header blush">
+          <div class="step-pill">📋 Langkah 1 dari 4</div>
+          <div class="sq">Ceritakan tentang dirimu</div>
+        </div>
+        <div class="screen-body">
+          <div class="inp-group">
+            <div class="inp-label">Nama Panggilan</div>
+            <div class="inp-field active">Aisyah</div>
+          </div>
+          <div class="inp-row">
+            <div class="inp-group" style="flex:1.4">
+              <div class="inp-label">Tanggal Lahir</div>
+              <div class="inp-field">14/03/2001</div>
+            </div>
+            <div class="inp-group" style="flex:1">
+              <div class="inp-label">Usia</div>
+              <div class="inp-field active">25 th</div>
+            </div>
+          </div>
+          <div class="inp-group">
+            <div class="inp-label">Status Pernikahan (Opsional)</div>
+            <div class="seg-row" style="margin-top:3px">
+              <div class="seg-btn" onclick="toggleSeg(this)">Lajang</div>
+              <div class="seg-btn active" onclick="toggleSeg(this)">Menikah ✓</div>
+              <div class="seg-btn" onclick="toggleSeg(this)">Lainnya</div>
+            </div>
+          </div>
+          <div class="inp-row">
+            <div class="inp-group" style="flex:1">
+              <div class="inp-label">Tinggi (cm)</div>
+              <div class="inp-field">160 cm</div>
+            </div>
+            <div class="inp-group" style="flex:1">
+              <div class="inp-label">Berat (kg)</div>
+              <div class="inp-field placeholder">Opsional</div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-btn-area">
+          <button class="btn-primary" onclick="goTo('s-goal')">Lanjut →</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 3: GOAL SELECTION (Step 2/4)
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-goal">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:50%"></div></div>
+        <div class="section-header blush">
+          <div class="step-pill">🎯 Langkah 2 dari 4</div>
+          <div class="sq">Apa tujuan utama kamu?</div>
+        </div>
+        <div class="screen-body">
+          <div class="goal-card selected" id="goal-rutin" onclick="selectGoal('rutin')">
+            <div class="goal-icon-row">
+              <div class="goal-icon" style="background:var(--pb2)">🌸</div>
+              <div style="flex:1">
+                <div class="goal-name">Pelacakan Siklus Rutin</div>
+                <div class="goal-desc">Pantau & kelola siklus hormonalmu sehari-hari untuk kesehatan optimal</div>
+              </div>
+              <div class="goal-check" id="check-rutin">✓</div>
+            </div>
+            <div class="feat-pills">
+              <span class="feat-pill" style="background:var(--pb);color:var(--p)">4-Fase Tracker</span>
+              <span class="feat-pill" style="background:#E8F5E9;color:#2E7D32">Mood Log</span>
+              <span class="feat-pill" style="background:#E3F2FD;color:#1565C0">Smart Food</span>
+              <span class="feat-pill" style="background:#F3E5F5;color:#6A1B9A">Edukasi</span>
+            </div>
+          </div>
+          <div class="goal-card" id="goal-promil" onclick="selectGoal('promil')">
+            <div class="goal-icon-row">
+              <div class="goal-icon" style="background:#FFF3E0">🍼</div>
+              <div style="flex:1">
+                <div class="goal-name">Persiapan Kehamilan (Promil)</div>
+                <div class="goal-desc">Identifikasi masa subur & optimalkan peluang kehamilan dengan notif presisi</div>
+              </div>
+              <div class="goal-check" id="check-promil" style="background:var(--ps);font-size:0"></div>
+            </div>
+            <div class="feat-pills">
+              <span class="feat-pill" style="background:#FFF3E0;color:#E65100">Fertility Window</span>
+              <span class="feat-pill" style="background:var(--pb);color:var(--p)">Notif Ovulasi</span>
+              <span class="feat-pill" style="background:#E8F5E9;color:#2E7D32">Partner Sync</span>
+              <span class="feat-pill" style="background:#FCE4EC;color:#880E4F">Promil Tips</span>
+            </div>
+          </div>
+          <div class="hint-box">💡 Kamu bisa mengubah tujuan ini kapan saja di Pengaturan</div>
+        </div>
+        <div class="bottom-btn-area">
+          <button class="btn-primary" id="btn-goal-next" onclick="goTo('s-lmp')">Lanjut dengan Pelacakan Rutin →</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 4: INPUT LMP (Step 3/4)
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-lmp">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:75%"></div></div>
+        <div class="section-header blush">
+          <div class="step-pill">📅 Langkah 3 dari 4</div>
+          <div class="sq">Kapan haid terakhirmu dimulai?</div>
+        </div>
+        <div class="screen-body">
+          <div class="cal-wrap">
+            <div class="cal-head">
+              <span class="cal-nav">‹</span>
+              <span class="cal-month">Februari 2026</span>
+              <span class="cal-nav">›</span>
+            </div>
+            <div class="cal-grid-head">
+              <div class="cal-dh">Se</div><div class="cal-dh">Se</div><div class="cal-dh">Ra</div>
+              <div class="cal-dh">Ka</div><div class="cal-dh">Ju</div><div class="cal-dh">Sa</div><div class="cal-dh">Mi</div>
+            </div>
+            <div class="cal-grid">
+              <div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div>
+              <div class="cal-day">1</div><div class="cal-day">2</div>
+              <div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div><div class="cal-day">9</div>
+              <div class="cal-day selected" onclick="selectDay(this)">10</div><div class="cal-day range">11</div><div class="cal-day range">12</div><div class="cal-day range">13</div><div class="cal-day range">14</div><div class="cal-day">15</div><div class="cal-day">16</div>
+              <div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day today">20</div><div class="cal-day">21</div><div class="cal-day">22</div><div class="cal-day">23</div>
+              <div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div>
+            </div>
+          </div>
+          <div class="inp-group">
+            <div class="inp-label">Durasi Haid Biasanya</div>
+            <div class="seg-row">
+              <div class="seg-btn" onclick="toggleSeg(this)">3 hr</div>
+              <div class="seg-btn" onclick="toggleSeg(this)">4 hr</div>
+              <div class="seg-btn active" onclick="toggleSeg(this)">5 hr ✓</div>
+              <div class="seg-btn" onclick="toggleSeg(this)">6 hr</div>
+              <div class="seg-btn" onclick="toggleSeg(this)">7+</div>
+            </div>
+          </div>
+          <div style="background:var(--pb);border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between">
+            <div><div style="font-size:9px;color:var(--pm)">Haid Berikutnya</div><div style="font-size:13px;font-weight:700;color:var(--p)">10 Mar 2026</div></div>
+            <div style="text-align:right"><div style="font-size:9px;color:var(--pm)">Fase Kini</div><div style="font-size:13px;font-weight:700;color:var(--p)">🌱 Folikular</div></div>
+          </div>
+        </div>
+        <div class="bottom-btn-area">
+          <button class="btn-primary" onclick="goTo('s-calculating')">Hitung Siklusku →</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 5: CALCULATING (Logic Layer)
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-calculating">
+        <div class="status-bar white" style="position:absolute;top:0;width:100%;z-index:99;background:transparent">
+          <span>9:41</span><span>▲▲ 🔋</span>
+        </div>
+        <div class="loading-bg">
+          <div class="spinner"></div>
+          <div class="loading-title">Mempersiapkan<br>Profil Hormonalmu...</div>
+          <div class="loading-sub">Logic Layer sedang memproses<br>data siklus & menghitung fasenya</div>
+          <div class="check-list">
+            <div class="check-item">
+              <div class="check-icon" style="background:rgba(255,255,255,0.9)">✓</div>
+              <div class="check-text">Mengidentifikasi fase aktif saat ini</div>
+            </div>
+            <div class="check-item">
+              <div class="check-icon" style="background:rgba(255,255,255,0.9)">✓</div>
+              <div class="check-text">Menghitung jendela masa subur</div>
+            </div>
+            <div class="check-item" style="opacity:0.65">
+              <div class="check-icon" style="border:1.5px solid rgba(255,255,255,0.6)"></div>
+              <div class="check-text">Menyiapkan rekomendasi nutrisi...</div>
+            </div>
+            <div class="check-item" style="opacity:0.4">
+              <div class="check-icon" style="border:1.5px solid rgba(255,255,255,0.4)"></div>
+              <div class="check-text">Enkripsi & simpan ke Room DB lokal</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 6: SET NOTIFIKASI (Step 4/4)
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-notif-setup">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:90%"></div></div>
+        <div class="section-header blush">
+          <div class="step-pill">⚙️ Langkah 4 dari 4</div>
+          <div class="sq">Atur Pengingat & Preferensi</div>
+        </div>
+        <div class="screen-body">
+          <div class="sec-label-muted">Notifikasi Aktif</div>
+          <div class="card accent">
+            <div class="toggle-row">
+              <div><div class="card-title" style="margin:0">🌙 Log Harian</div><div class="card-sub">Setiap pukul 21.00 — catat mood & gejala</div></div>
+              <div class="tgl on" onclick="toggleSwitch(this)"><div class="tgl-ball"></div></div>
+            </div>
+          </div>
+          <div class="card accent">
+            <div class="toggle-row">
+              <div><div class="card-title" style="margin:0">📅 Pengingat Haid</div><div class="card-sub">H-3 sebelum tanggal prediksi haid</div></div>
+              <div class="tgl on" onclick="toggleSwitch(this)"><div class="tgl-ball"></div></div>
+            </div>
+          </div>
+          <div class="card" style="border-left:3px solid var(--ps)">
+            <div class="toggle-row">
+              <div><div class="card-title" style="margin:0">🌸 Masa Subur</div><div class="card-sub">H-2 & hari puncak ovulasi</div></div>
+              <div class="tgl" onclick="toggleSwitch(this)"><div class="tgl-ball"></div></div>
+            </div>
+          </div>
+          <div class="card" style="border-left:3px solid var(--ps)">
+            <div class="toggle-row">
+              <div><div class="card-title" style="margin:0">💊 Pengingat Suplemen</div><div class="card-sub">Pagi hari sesuai fase aktif</div></div>
+              <div class="tgl" onclick="toggleSwitch(this)"><div class="tgl-ball"></div></div>
+            </div>
+          </div>
+          <div class="sec-label-muted" style="margin-top:4px">Partner Sync (Opsional)</div>
+          <div class="card" id="partner-setup-card">
+            <!-- State: belum ada partner -->
+            <div id="partner-empty-state">
+              <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+                <div class="partner-avatar" id="partner-avatar-icon">💞</div>
+                <div>
+                  <div class="card-title" style="margin:0">Hubungkan Pasangan</div>
+                  <div class="card-sub">Masukkan nama & no. WhatsApp pasangan</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div>
+                  <div style="font-size:9px;font-weight:700;color:var(--pm);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">Nama Pasangan</div>
+                  <input id="partner-name-input" type="text" placeholder="cth: Rizky Sayang 💕"
+                    style="width:100%;background:var(--pb);border:1.5px solid var(--ps);border-radius:9px;padding:8px 11px;font-size:11px;color:var(--pt);font-family:'DM Sans',sans-serif;outline:none"
+                    oninput="updatePartnerPreview()" onfocus="this.style.borderColor='var(--p)'" onblur="this.style.borderColor='var(--ps)'">
+                </div>
+                <div>
+                  <div style="font-size:9px;font-weight:700;color:var(--pm);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px">No. WhatsApp</div>
+                  <div style="display:flex;gap:5px;align-items:center">
+                    <div style="background:var(--pb);border:1.5px solid var(--ps);border-radius:9px;padding:8px 10px;font-size:11px;color:var(--pm);white-space:nowrap;font-weight:600">🇮🇩 +62</div>
+                    <input id="partner-phone-input" type="tel" placeholder="812-3456-7890"
+                      style="flex:1;background:var(--pb);border:1.5px solid var(--ps);border-radius:9px;padding:8px 11px;font-size:11px;color:var(--pt);font-family:'DM Sans',sans-serif;outline:none"
+                      oninput="updatePartnerPreview()" onfocus="this.style.borderColor='var(--p)'" onblur="this.style.borderColor='var(--ps)'">
+                  </div>
+                </div>
+              </div>
+              <!-- Preview pesan -->
+              <div id="partner-preview-wrap" style="display:none;margin-top:10px">
+                <div style="font-size:9px;font-weight:700;color:var(--pm);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px">Preview Pesan</div>
+                <div class="wa-bubble" id="partner-preview-msg" style="font-size:10px;line-height:1.5"></div>
+              </div>
+              <div style="height:8px"></div>
+              <button class="btn-primary" onclick="savePartner()" style="font-size:11px">💾 Simpan Kontak Pasangan</button>
+            </div>
+            <!-- State: sudah ada partner (hidden by default) -->
+            <div id="partner-saved-state" style="display:none">
+              <div style="display:flex;gap:10px;align-items:center">
+                <div style="width:42px;height:42px;background:var(--p);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💞</div>
+                <div style="flex:1">
+                  <div style="font-size:12px;font-weight:700;color:var(--pt)" id="saved-partner-name">—</div>
+                  <div style="font-size:10px;color:var(--pm)" id="saved-partner-phone">—</div>
+                </div>
+                <div style="font-size:9px;color:var(--p);font-weight:700;cursor:pointer;text-decoration:underline" onclick="editPartner()">Ubah</div>
+              </div>
+              <div style="height:8px"></div>
+              <button class="btn-primary" onclick="sendToPartnerWA()" style="font-size:11px;display:flex;align-items:center;justify-content:center;gap:6px;background:#25D366">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                Beritahu Pasangan via WhatsApp
+              </button>
+            </div>
+            <div style="margin-top:8px">
+              <div class="hint-box" style="font-size:9px">🔒 Nomor disimpan lokal di perangkat — hanya ringkasan umum yang dibagikan, data medis tetap privat</div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-btn-area">
+          <button class="btn-primary" onclick="goTo('s-dashboard')">Selesai — Lihat Dashboard 🎉</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 7: DASHBOARD (Main)
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-dashboard">
+        <div class="status-bar white" style="position:absolute;top:0;width:100%;z-index:99;background:transparent">
+          <span>9:41</span><span>▲▲ 🔋</span>
+        </div>
+        <div class="dash-hero">
+          <div style="padding-top:8px">
+            <div class="dash-greeting">Selamat pagi,</div>
+            <div class="dash-name">Aisyah ✨</div>
+          </div>
+          <div class="ring-wrap">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="8"/>
+              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,255,255,0.88)" stroke-width="8"
+                stroke-dasharray="207" stroke-dashoffset="104" stroke-linecap="round" transform="rotate(-90 55 55)"/>
+            </svg>
+            <div class="ring-text">
+              <div class="ring-day">18</div>
+              <div class="ring-lbl">Hari ke-18</div>
+            </div>
+          </div>
+          <div style="text-align:center"><div class="phase-badge">🌸 Fase Luteal</div></div>
+          <div class="dash-stats">
+            <div class="dash-stat"><div class="dash-stat-v">28</div><div class="dash-stat-l">Panjang Siklus</div></div>
+            <div class="dash-stat"><div class="dash-stat-v">10</div><div class="dash-stat-l">Hari Tersisa</div></div>
+            <div class="dash-stat"><div class="dash-stat-v">10 Mar</div><div class="dash-stat-l">Berikutnya</div></div>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div class="notif-card gold-accent">
+            <div class="notif-icon">🎉</div>
+            <div><div class="notif-title">Profil berhasil dibuat!</div>
+            <div class="notif-body">Selamat datang di CycleSync! Mulai perjalanan kesehatan hormonalmu.</div></div>
+          </div>
+          <div class="sec-label">Akses Cepat</div>
+          <div class="quick-grid">
+            <div class="quick-card" onclick="goTo('s-daily-log')">
+              <div class="quick-icon">📋</div>
+              <div class="quick-title">Log Harian</div>
+              <div class="quick-sub">Catat mood & gejala hari ini</div>
+            </div>
+            <div class="quick-card" onclick="goTo('s-smart-food')">
+              <div class="quick-icon">🥗</div>
+              <div class="quick-title">Smart Food</div>
+              <div class="quick-sub">Rekomendasi fase Luteal</div>
+            </div>
+            <div class="quick-card" onclick="goTo('s-education')">
+              <div class="quick-icon">📚</div>
+              <div class="quick-title">Education Center</div>
+              <div class="quick-sub">Literasi kesehatan hormonal</div>
+            </div>
+            <div class="quick-card" onclick="goTo('s-partner-sync')">
+              <div class="quick-icon">💞</div>
+              <div class="quick-title">Partner Sync</div>
+              <div class="quick-sub">Bagikan status ke pasangan</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">💡 Rekomendasi Hari Ini</div>
+            <div style="display:flex;gap:8px;align-items:flex-start">
+              <span style="font-size:16px">🥛</span>
+              <div><div style="font-size:10px;font-weight:700;color:var(--p)">Nutrisi</div><div class="card-sub">Konsumsi kalsium & magnesium untuk meredakan gejala PMS</div></div>
+            </div>
+            <div style="height:6px"></div>
+            <div style="display:flex;gap:8px;align-items:flex-start">
+              <span style="font-size:16px">🧘</span>
+              <div><div style="font-size:10px;font-weight:700;color:var(--p)">Olahraga</div><div class="card-sub">Yoga atau stretching ringan sangat direkomendasikan</div></div>
+            </div>
+          </div>
+          <div class="card" onclick="goTo('s-notif-fertility')" style="cursor:pointer">
+            <div class="card-title">🌸 Status Masa Subur</div>
+            <div class="card-sub">Masa subur berikutnya: <strong style="color:var(--p)">24-28 Feb</strong> · Ovulasi: <strong style="color:var(--p)">26 Feb</strong></div>
+            <div style="margin-top:8px;font-size:9px;color:var(--p);font-weight:700">Lihat notifikasi masa subur →</div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="goTo('s-dashboard')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#D4607A"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span class="nav-pill active">Beranda</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-calendar')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#8A6470"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+            <span class="nav-pill">Siklus</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-daily-log')">
+            <div class="nav-center-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+            <span class="nav-pill" style="margin-top:2px">Log</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-smart-food')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#8A6470"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-3.86-3.39-5.35-7.51-5.35C4.38 9.64 1 11.13 1 14.99v1h15.03v-1z"/></svg>
+            <span class="nav-pill">Food</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-education')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#8A6470"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+            <span class="nav-pill">Edukasi</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 8: DAILY LOG
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-daily-log">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="section-header pink">
+          <div class="back-btn" onclick="goTo('s-dashboard')">← Kembali</div>
+          <div class="sh-title">Log Harian</div>
+          <div class="sh-sub">Senin, 16 Mar 2026 · Hari ke-18</div>
+        </div>
+        <div class="screen-body">
+          <div class="sec-label">Bagaimana mood kamu?</div>
+          <div class="mood-grid">
+            <div class="mood-item" onclick="selectMood(this)">
+              <div class="mood-circle">😄</div>
+              <div class="mood-lbl">Bahagia</div>
+            </div>
+            <div class="mood-item" onclick="selectMood(this)">
+              <div class="mood-circle active">😌</div>
+              <div class="mood-lbl" style="color:var(--p);font-weight:700">Tenang ✓</div>
+            </div>
+            <div class="mood-item" onclick="selectMood(this)">
+              <div class="mood-circle">😔</div>
+              <div class="mood-lbl">Sedih</div>
+            </div>
+            <div class="mood-item" onclick="selectMood(this)">
+              <div class="mood-circle">😤</div>
+              <div class="mood-lbl">Emosi</div>
+            </div>
+            <div class="mood-item" onclick="selectMood(this)">
+              <div class="mood-circle">😴</div>
+              <div class="mood-lbl">Lelah</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">⚡ Level Energi</div>
+            <div class="energy-bar" id="energy-bar">
+              <div class="e-seg filled" onclick="setEnergy(1)"></div>
+              <div class="e-seg filled" onclick="setEnergy(2)"></div>
+              <div class="e-seg filled" onclick="setEnergy(3)"></div>
+              <div class="e-seg empty" onclick="setEnergy(4)"></div>
+              <div class="e-seg empty" onclick="setEnergy(5)"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--pm);margin-top:4px">
+              <span>Rendah</span><span style="color:var(--p);font-weight:700" id="energy-val">3 / 5</span><span>Tinggi</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🤒 Gejala Fisik</div>
+            <div class="chip-grid">
+              <div class="chip active" onclick="toggleChip(this)">Kram Ringan</div>
+              <div class="chip active" onclick="toggleChip(this)">Kembung</div>
+              <div class="chip" onclick="toggleChip(this)">Sakit Kepala</div>
+              <div class="chip" onclick="toggleChip(this)">Mual</div>
+              <div class="chip active" onclick="toggleChip(this)">Nyeri Payudara</div>
+              <div class="chip" onclick="toggleChip(this)">Jerawat</div>
+              <div class="chip" onclick="toggleChip(this)">Sembelit</div>
+              <div class="chip" onclick="toggleChip(this)">Insomnia</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🩸 Status Haid Hari Ini</div>
+            <div class="seg-row">
+              <div class="seg-btn active" onclick="toggleSeg(this)">Tidak</div>
+              <div class="seg-btn" onclick="toggleSeg(this)">Ringan</div>
+              <div class="seg-btn" onclick="toggleSeg(this)">Sedang</div>
+              <div class="seg-btn" onclick="toggleSeg(this)">Deras</div>
+            </div>
+          </div>
+          <div class="card" style="background:var(--pb2);border-color:var(--ps)">
+            <div class="toggle-row">
+              <div>
+                <div class="card-title" style="margin:0;font-size:11px">⚠️ Haid Telat &gt;14 Hari?</div>
+                <div class="card-sub">Aktifkan jika haid telat signifikan</div>
+              </div>
+              <div class="tgl" onclick="toggleSwitch(this);checkPregnancy(this)"><div class="tgl-ball"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-btn-area">
+          <button class="btn-primary" onclick="saveLog()">💾 Simpan Log Hari Ini</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 9: PREGNANCY DETECTION
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-pregnancy-detect">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="section-header" style="background:linear-gradient(145deg,#7B5EA7,#9B6EC8);padding:22px 18px 14px">
+          <div class="back-btn" onclick="goTo('s-daily-log')">← Kembali</div>
+          <div class="sh-title">🤰 Deteksi Kehamilan</div>
+          <div class="sh-sub">Sistem mendeteksi potensi keterlambatan haid</div>
+        </div>
+        <div class="screen-body">
+          <div class="notif-card" style="border-left:3px solid #7B5EA7;background:#F3E5F5">
+            <div class="notif-icon">⚠️</div>
+            <div>
+              <div class="notif-title" style="color:#4A148C">Haid Telat &gt; 14 Hari</div>
+              <div class="notif-body">Sistem mendeteksi keterlambatan signifikan. Disarankan melakukan tes kehamilan mandiri.</div>
+            </div>
+          </div>
+          <div class="card" style="border:2px solid #CE93D8">
+            <div class="card-title">🧪 Hasil Tes Kehamilan</div>
+            <div class="card-sub" style="margin-bottom:10px">Apakah kamu sudah melakukan tes dan apa hasilnya?</div>
+            <div class="seg-row">
+              <div class="seg-btn" onclick="toggleSeg(this)" style="font-size:11px">❌ Negatif</div>
+              <div class="seg-btn" id="btn-positive" onclick="confirmPregnancy()" style="font-size:11px;border-color:#7B5EA7;color:#7B5EA7">✅ Positif!</div>
+            </div>
+          </div>
+          <div class="hint-box" style="border-color:#7B5EA7">
+            💡 Jika negatif, sistem akan melakukan rekalkulasi ulang siklus berdasarkan data terbaru.
+          </div>
+          <div class="card">
+            <div class="card-title">📊 Moving Average Siklus</div>
+            <div class="card-sub">Sistem akan menghitung ulang rata-rata siklus jika haid baru dimulai.</div>
+            <div style="margin-top:8px;display:flex;gap:6px">
+              <div style="flex:1;background:var(--pb);border-radius:8px;padding:6px;text-align:center">
+                <div style="font-size:11px;font-weight:700;color:var(--p)">28 hari</div>
+                <div style="font-size:8px;color:var(--pm)">Rata-rata kini</div>
+              </div>
+              <div style="flex:1;background:var(--pb);border-radius:8px;padding:6px;text-align:center">
+                <div style="font-size:11px;font-weight:700;color:var(--p)">3 siklus</div>
+                <div style="font-size:8px;color:var(--pm)">Data historis</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-btn-area">
+          <button class="btn-outline" onclick="goTo('s-daily-log')">Haid Baru Dimulai — Hitung Ulang</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 10: PREGNANCY MODE DASHBOARD
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-pregnancy-mode">
+        <div class="status-bar white" style="position:absolute;top:0;width:100%;z-index:99;background:transparent">
+          <span>9:41</span><span>▲▲ 🔋</span>
+        </div>
+        <div class="preg-hero">
+          <div style="padding-top:8px">
+            <div class="preg-badge">🤰 Mode Kehamilan Aktif</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:18px;color:white;margin-bottom:8px">Selamat, Aisyah! 💜</div>
+          </div>
+          <div class="hpl-card">
+            <div class="hpl-label">Hari Perkiraan Lahir (HPL)</div>
+            <div class="hpl-date">17 November 2026</div>
+            <div class="hpl-weeks">Usia kehamilan: 4 minggu 2 hari</div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <div style="flex:1;background:rgba(255,255,255,0.2);border-radius:8px;padding:6px;text-align:center">
+                <div style="font-size:12px;font-weight:700;color:white">4w 2d</div>
+                <div style="font-size:8px;color:rgba(255,255,255,0.8)">Usia Kehamilan</div>
+              </div>
+              <div style="flex:1;background:rgba(255,255,255,0.2);border-radius:8px;padding:6px;text-align:center">
+                <div style="font-size:12px;font-weight:700;color:white">Trimester 1</div>
+                <div style="font-size:8px;color:rgba(255,255,255,0.8)">Fase Kehamilan</div>
+              </div>
+              <div style="flex:1;background:rgba(255,255,255,0.2);border-radius:8px;padding:6px;text-align:center">
+                <div style="font-size:12px;font-weight:700;color:white">249 hari</div>
+                <div style="font-size:8px;color:rgba(255,255,255,0.8)">Menuju HPL</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div class="notif-card" style="border-left:3px solid #7B5EA7">
+            <div class="notif-icon">💊</div>
+            <div><div class="notif-title">Suplemen Kehamilan</div><div class="notif-body">Asam folat 400mcg sangat direkomendasikan di trimester pertama</div></div>
+          </div>
+          <div class="card" style="cursor:pointer;border-left:3px solid #7B5EA7" onclick="goTo('s-smart-food')">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div class="card-title" style="margin:0">🥗 Nutrisi Ibu Hamil</div>
+              <span style="font-size:9px;color:#7B5EA7;font-weight:700">Lihat semua →</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="display:flex;gap:8px;align-items:center"><span style="font-size:14px">🥦</span><div class="card-sub">Sayuran hijau — Asam folat perkembangan otak janin</div></div>
+              <div style="display:flex;gap:8px;align-items:center"><span style="font-size:14px">🐟</span><div class="card-sub">Ikan rendah merkuri — Omega-3 untuk otak bayi</div></div>
+            </div>
+          </div>
+          <div class="card" style="cursor:pointer;border-left:3px solid #7B5EA7" onclick="goTo('s-smart-food')">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <div class="card-title" style="margin:0">🧘 Olahraga Kehamilan</div>
+              <span style="font-size:9px;color:#7B5EA7;font-weight:700">Lihat semua →</span>
+            </div>
+            <div class="card-sub">Yoga kehamilan & jalan pagi 20-30 menit — aman untuk trimester 1</div>
+          </div>
+          <div class="quick-grid">
+            <div class="quick-card" onclick="goTo('s-education')" style="border-color:#CE93D8">
+              <div class="quick-icon">📚</div>
+              <div class="quick-title">Edukasi Hamil</div>
+              <div class="quick-sub">Artikel trimester 1</div>
+            </div>
+            <div class="quick-card" onclick="goTo('s-partner-sync')" style="border-color:#CE93D8">
+              <div class="quick-icon">💞</div>
+              <div class="quick-title">Partner Sync</div>
+              <div class="quick-sub">Beritahu pasangan</div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="goTo('s-pregnancy-mode')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#7B5EA7"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span class="nav-pill" style="color:#7B5EA7;font-weight:700">Beranda</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-pregnancy-hpl')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#7B5EA7"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+            <span class="nav-pill" style="color:#7B5EA7;font-weight:700">HPL</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-daily-log')">
+            <div class="nav-center-btn" style="background:#7B5EA7"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+            <span class="nav-pill" style="color:#7B5EA7;margin-top:2px">Log</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-smart-food')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-3.86-3.39-5.35-7.51-5.35C4.38 9.64 1 11.13 1 14.99v1h15.03v-1z"/></svg>
+            <span class="nav-pill">Nutrisi</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-partner-sync')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span class="nav-pill">Partner</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 10b: PREGNANCY HPL CALENDAR
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-pregnancy-hpl">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="nav-header" style="background:linear-gradient(135deg,#7B5EA7,#9B6EC8);border:none;padding:14px 18px 12px">
+          <div class="nav-header-back" onclick="goTo('s-pregnancy-mode')" style="background:rgba(255,255,255,0.2)"><span style="color:white;font-size:16px">←</span></div>
+          <div>
+            <div class="nav-header-title" style="color:white">Kalender Kehamilan</div>
+            <div class="nav-header-sub" style="color:rgba(255,255,255,0.8)">HPL: 17 November 2026</div>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div style="background:linear-gradient(120deg,#7B5EA7,#B88FD8);border-radius:14px;padding:14px;color:white">
+            <div style="font-size:9px;color:rgba(255,255,255,0.8);margin-bottom:2px">Hari Perkiraan Lahir</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:20px;color:white">17 November 2026</div>
+            <div style="display:flex;gap:6px;margin-top:10px">
+              <div style="flex:1;background:rgba(255,255,255,0.18);border-radius:8px;padding:7px;text-align:center">
+                <div style="font-size:13px;font-weight:700;color:white">4w 2d</div>
+                <div style="font-size:8px;color:rgba(255,255,255,0.75)">Usia Hamil</div>
+              </div>
+              <div style="flex:1;background:rgba(255,255,255,0.18);border-radius:8px;padding:7px;text-align:center">
+                <div style="font-size:13px;font-weight:700;color:white">Trimester 1</div>
+                <div style="font-size:8px;color:rgba(255,255,255,0.75)">Fase</div>
+              </div>
+              <div style="flex:1;background:rgba(255,255,255,0.18);border-radius:8px;padding:7px;text-align:center">
+                <div style="font-size:13px;font-weight:700;color:white">249 hari</div>
+                <div style="font-size:8px;color:rgba(255,255,255,0.75)">Menuju HPL</div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="border-left:3px solid #7B5EA7">
+            <div class="card-title" style="color:#4A148C">📅 Milestone Kehamilan</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+              <div style="display:flex;gap:10px;align-items:center">
+                <div style="width:36px;height:36px;background:#F3E5F5;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">👶</div>
+                <div><div style="font-size:10px;font-weight:700;color:#4A148C">Minggu 12 — USG Pertama</div><div style="font-size:9px;color:var(--pm)">4 Juni 2026 · Trimester 1 selesai</div></div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <div style="width:36px;height:36px;background:#EDE7F6;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">💜</div>
+                <div><div style="font-size:10px;font-weight:700;color:#4A148C">Minggu 20 — Anatomy Scan</div><div style="font-size:9px;color:var(--pm)">1 Agustus 2026 · Jenis kelamin terlihat</div></div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <div style="width:36px;height:36px;background:#E8EAF6;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🌟</div>
+                <div><div style="font-size:10px;font-weight:700;color:#4A148C">Minggu 28 — Trimester 3</div><div style="font-size:9px;color:var(--pm)">26 September 2026 · Persiapan persalinan</div></div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <div style="width:36px;height:36px;background:#FCE4EC;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🎉</div>
+                <div><div style="font-size:10px;font-weight:700;color:#7B5EA7">HPL — 17 November 2026</div><div style="font-size:9px;color:var(--pm)">Hari yang ditunggu-tunggu!</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="border:2px dashed #CE93D8;background:#FDF5FF">
+            <div style="font-size:11px;font-weight:700;color:#4A148C;margin-bottom:6px">🎊 Sudah Melahirkan?</div>
+            <div style="font-size:10px;color:var(--pm);margin-bottom:10px;line-height:1.5">Selamat atas kelahiran si kecil! Tandai sebagai selesai untuk kembali ke pelacakan siklus normal.</div>
+            <button class="btn-primary" style="background:#7B5EA7" onclick="goTo('s-postpartum')">Tandai Sudah Melahirkan 🎉</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 10c: POSTPARTUM — SELESAI HAMIL
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-postpartum">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="section-header" style="background:linear-gradient(145deg,#7B5EA7,#B88FD8);padding:22px 18px 16px">
+          <div class="sh-title">🎊 Selamat atas Kelahiran Si Kecil!</div>
+          <div class="sh-sub">Waktunya kembali ke pelacakan siklus normalmu</div>
+        </div>
+        <div class="screen-body">
+          <div style="background:linear-gradient(120deg,#7B5EA7,#B88FD8);border-radius:14px;padding:16px;text-align:center">
+            <div style="font-size:40px;margin-bottom:8px">👶</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:16px;color:white;line-height:1.3">Selamat datang di fase baru<br>perjalanan kesehatanmu!</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.85);margin-top:6px;line-height:1.5">Sistem akan mereset mode kehamilan<br>dan menyiapkan pelacakan siklus pasca-melahirkan</div>
+          </div>
+          <div class="card" style="border-left:3px solid #7B5EA7">
+            <div class="card-title">📋 Yang akan direset:</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+              <div style="display:flex;align-items:center;gap:8px"><span style="color:#7B5EA7;font-size:14px">↩</span><div style="font-size:10px;color:var(--pt)">Status kehamilan → <strong>Tidak aktif</strong></div></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="color:#7B5EA7;font-size:14px">↩</span><div style="font-size:10px;color:var(--pt)">Dashboard → <strong>Tampilan siklus normal</strong></div></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="color:#7B5EA7;font-size:14px">↩</span><div style="font-size:10px;color:var(--pt)">Notifikasi → <strong>Reminder siklus standar</strong></div></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-size:14px">✓</span><div style="font-size:10px;color:var(--pt)">Riwayat kehamilan → <strong>Tersimpan di Room DB</strong></div></div>
+            </div>
+          </div>
+          <div class="card" style="background:#FFF3E0;border-left:3px solid var(--gold)">
+            <div class="card-title" style="color:#E65100">⏰ Kapan Haid Kembali?</div>
+            <div style="font-size:10px;color:#5D4037;line-height:1.5">Setelah melahirkan, haid biasanya kembali dalam <strong>6–8 minggu</strong> (jika tidak menyusui) atau <strong>6 bulan+</strong> (jika menyusui eksklusif). Masukkan tanggal haid pertama saat sudah kembali.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">🍼 Status Menyusui?</div>
+            <div class="card-sub" style="margin-bottom:8px">Pilih status untuk rekomendasi nutrisi yang tepat</div>
+            <div class="seg-row">
+              <div class="seg-btn active" onclick="toggleSeg(this)">Ya, ASI Eksklusif</div>
+              <div class="seg-btn" onclick="toggleSeg(this)">Tidak / MPASI</div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-btn-area">
+          <button class="btn-primary" onclick="endPregnancy()">Kembali ke Pelacakan Siklus →</button>
+          <button class="btn-ghost" onclick="goTo('s-pregnancy-mode')">← Kembali ke Mode Kehamilan</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 10d: POSTPARTUM RESET — LOADING
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-postpartum-reset">
+        <div class="status-bar white" style="position:absolute;top:0;width:100%;z-index:99;background:transparent">
+          <span>9:41</span><span>▲▲ 🔋</span>
+        </div>
+        <div class="loading-bg" style="background:linear-gradient(155deg,#7B5EA7,#9B6EC8)">
+          <div style="font-size:48px;margin-bottom:8px">🌸</div>
+          <div class="loading-title">Mereset ke Mode Siklus...</div>
+          <div class="loading-sub">Sistem sedang menyiapkan<br>pelacakan siklus pasca-melahirkan</div>
+          <div class="check-list">
+            <div class="check-item" style="background:rgba(255,255,255,0.16)">
+              <div class="check-icon" style="background:rgba(255,255,255,0.9)">✓</div>
+              <div class="check-text">Menyimpan riwayat kehamilan ke Room DB</div>
+            </div>
+            <div class="check-item" style="background:rgba(255,255,255,0.16)">
+              <div class="check-icon" style="background:rgba(255,255,255,0.9)">✓</div>
+              <div class="check-text">Mereset status kehamilan → tidak aktif</div>
+            </div>
+            <div class="check-item" style="background:rgba(255,255,255,0.12);opacity:0.7">
+              <div class="check-icon" style="border:1.5px solid rgba(255,255,255,0.6)"></div>
+              <div class="check-text">Menyiapkan dashboard siklus normal...</div>
+            </div>
+            <div class="check-item" style="background:rgba(255,255,255,0.08);opacity:0.45">
+              <div class="check-icon" style="border:1.5px solid rgba(255,255,255,0.4)"></div>
+              <div class="check-text">Mengatur notifikasi haid pertama pasca-lahir</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 10e: POSTPARTUM DASHBOARD (Welcome Back)
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-postpartum-dashboard">
+        <div class="status-bar white" style="position:absolute;top:0;width:100%;z-index:99;background:transparent">
+          <span>9:41</span><span>▲▲ 🔋</span>
+        </div>
+        <div class="dash-hero" style="background:linear-gradient(145deg,#C94D68 0%,#D4607A 55%,#E8899A 100%)">
+          <div style="padding-top:8px">
+            <div class="dash-greeting">Selamat datang kembali,</div>
+            <div class="dash-name">Aisyah 🌸</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.2);border-radius:14px;padding:12px;margin:8px 0;text-align:center">
+            <div style="font-size:11px;color:rgba(255,255,255,0.85);margin-bottom:4px">Mode Kehamilan Telah Selesai</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:15px;color:white">Menunggu Haid Pertama Pasca-Lahir</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.75);margin-top:4px">Masukkan tanggal haid saat sudah kembali untuk memulai pelacakan siklus</div>
+          </div>
+          <div class="dash-stats">
+            <div class="dash-stat"><div class="dash-stat-v">—</div><div class="dash-stat-l">Hari Siklus</div></div>
+            <div class="dash-stat"><div class="dash-stat-v">Pasca Lahir</div><div class="dash-stat-l">Status</div></div>
+            <div class="dash-stat"><div class="dash-stat-v">Tunggu</div><div class="dash-stat-l">Haid Kembali</div></div>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div class="notif-card" style="border-left:3px solid #7B5EA7;background:#F3E5F5">
+            <div class="notif-icon">💜</div>
+            <div><div class="notif-title" style="color:#4A148C">Mode Siklus Normal Aktif</div>
+            <div class="notif-body">Riwayat kehamilan tersimpan. Masukkan haid pertamamu saat sudah kembali untuk memulai tracking!</div></div>
+          </div>
+          <div class="card" style="border:2px solid var(--p);cursor:pointer" onclick="goTo('s-lmp')">
+            <div style="display:flex;gap:10px;align-items:center">
+              <div style="width:40px;height:40px;background:var(--pb);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px">📅</div>
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--p)">Masukkan Haid Pertama</div>
+                <div style="font-size:9px;color:var(--pm);margin-top:2px">Ketuk untuk mulai tracking siklus baru</div>
+              </div>
+              <span style="margin-left:auto;font-size:18px;color:var(--p)">→</span>
+            </div>
+          </div>
+          <div class="sec-label">Rekomendasi Pasca-Lahir</div>
+          <div class="card green-accent">
+            <div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:16px">🍼</span>
+            <div><div style="font-size:11px;font-weight:700;color:var(--pt)">Nutrisi Menyusui</div><div class="card-sub">Tambahan 500 kalori/hari, asupan kalsium & omega-3 penting untuk produksi ASI</div></div></div>
+          </div>
+          <div class="card accent">
+            <div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:16px">🧘</span>
+            <div><div style="font-size:11px;font-weight:700;color:var(--pt)">Pemulihan Pasca-Lahir</div><div class="card-sub">Senam kegel & jalan ringan aman sejak minggu ke-2. Hindari olahraga berat sampai 6 minggu post-partum</div></div></div>
+          </div>
+          <div class="quick-grid">
+            <div class="quick-card" onclick="goTo('s-daily-log')">
+              <div class="quick-icon">📋</div>
+              <div class="quick-title">Log Harian</div>
+              <div class="quick-sub">Catat mood & kondisi</div>
+            </div>
+            <div class="quick-card" onclick="goTo('s-education')">
+              <div class="quick-icon">📚</div>
+              <div class="quick-title">Edukasi Pasca-Lahir</div>
+              <div class="quick-sub">Tips pemulihan & menyusui</div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="goTo('s-postpartum-dashboard')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#D4607A"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span class="nav-pill active">Beranda</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-calendar')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#8A6470"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+            <span class="nav-pill">Siklus</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-daily-log')">
+            <div class="nav-center-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+            <span class="nav-pill" style="margin-top:2px">Log</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-smart-food')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#8A6470"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-3.86-3.39-5.35-7.51-5.35C4.38 9.64 1 11.13 1 14.99v1h15.03v-1z"/></svg>
+            <span class="nav-pill">Food</span>
+          </div>
+          <div class="nav-item" onclick="goTo('s-education')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#8A6470"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+            <span class="nav-pill">Edukasi</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 11: SMART FOOD & EXERCISE (Dynamic)
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-smart-food">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <!-- Header changes based on mode -->
+        <div class="nav-header" id="sf-header">
+          <div class="nav-header-back" id="sf-back" onclick="goBack('s-smart-food')">←</div>
+          <div>
+            <div class="nav-header-title" id="sf-title">Smart Food & Exercise</div>
+            <div class="nav-header-sub" id="sf-sub">Disesuaikan Fase Luteal · Hari ke-18</div>
+          </div>
+          <div class="sh-tag pink" id="sf-badge" style="margin-left:auto;font-size:8px">🌸 Luteal</div>
+        </div>
+        <div class="screen-body" id="sf-body">
+          <!-- Content injected by renderSmartFood() -->
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 12: EDUCATION CENTER (Dynamic)
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-education">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="section-header white" id="edu-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div id="edu-back-btn" style="display:none;cursor:pointer;font-size:18px;color:var(--p)" onclick="goBack('s-education')">←</div>
+            <div class="nav-header-title" id="edu-title">Education Center</div>
+            <div id="edu-mode-badge" style="display:none;margin-left:auto"></div>
+          </div>
+          <div class="search-bar">
+            <span style="font-size:14px">🔍</span>
+            <span class="search-placeholder" id="edu-search-ph">Cari artikel kesehatan reproduksi...</span>
+          </div>
+        </div>
+        <div class="screen-body" id="edu-body">
+          <!-- Content injected by renderEducation() -->
+        </div>
+        <div class="bottom-nav" id="edu-nav">
+          <div class="nav-item" onclick="goTo('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span class="nav-pill">Beranda</span></div>
+          <div class="nav-item" onclick="goTo('s-calendar')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg><span class="nav-pill">Siklus</span></div>
+          <div class="nav-item" onclick="goTo('s-daily-log')"><div class="nav-center-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div><span class="nav-pill" style="margin-top:2px">Log</span></div>
+          <div class="nav-item" onclick="goTo('s-smart-food')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-3.86-3.39-5.35-7.51-5.35C4.38 9.64 1 11.13 1 14.99v1h15.03v-1z"/></svg><span class="nav-pill">Food</span></div>
+          <div class="nav-item" onclick="goTo('s-education')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#D4607A"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg><span class="nav-pill active">Edukasi</span></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 13: ARTICLE VIEW
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-article">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="section-header pink">
+          <div class="back-btn" onclick="goTo('s-education')">← Kembali</div>
+          <div class="sh-title">Mengapa Kamu Lebih Emosional di Akhir Siklus?</div>
+          <div class="sh-sub">🌸 Hormon · 5 menit baca · Berdasarkan literatur ilmiah</div>
+        </div>
+        <div class="screen-body">
+          <div style="background:var(--pb);border-radius:10px;padding:8px 12px;display:flex;gap:6px;align-items:center">
+            <span style="font-size:14px">📌</span>
+            <div style="font-size:10px;color:var(--p);font-weight:600">Sesuai Fase Luteal aktifmu (Hari ke-18)</div>
+          </div>
+          <div style="font-size:13px;font-weight:700;color:var(--pt);font-family:'DM Serif Display',serif;line-height:1.4">Fluktuasi Hormon di Fase Luteal</div>
+          <div style="font-size:11px;color:var(--pt);line-height:1.7">Setelah ovulasi, kadar progesteron meningkat tajam sementara estrogen menurun. Perubahan ini berdampak langsung pada kadar serotonin — neurotransmitter yang mengatur suasana hati.</div>
+          <div style="font-size:13px;font-weight:700;color:var(--pt);font-family:'DM Serif Display',serif;line-height:1.4">Apa yang Terjadi di Otak?</div>
+          <div style="font-size:11px;color:var(--pt);line-height:1.7">Penelitian Ponzo et al. (2022) menunjukkan 45.2% perempuan melaporkan gejala PMS yang cukup parah hingga mempengaruhi produktivitas kerja — rata-rata 5.8 hari per tahun.</div>
+          <div class="card green-accent">
+            <div class="card-title">✅ Tips Berbasis Sains</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:10px;color:var(--pt)">🥛 Konsumsi kalsium 1200mg/hari — terbukti kurangi gejala PMS (Abdi et al., 2021)</div>
+              <div style="font-size:10px;color:var(--pt)">🧘 Yoga 30 menit/hari — turunkan kortisol & stabilkan mood</div>
+              <div style="font-size:10px;color:var(--pt)">🫚 Curcumin dari kunyit — anti-inflamasi & bantu regulasi hormon</div>
+            </div>
+          </div>
+          <div style="font-size:9px;color:var(--pm);border:0.5px solid var(--ps);border-radius:8px;padding:8px;line-height:1.5">
+            📚 Referensi: Abdi et al. (2021), Arabnezhad et al. (2022), Ponzo et al. (2022), Siminiuc & Turcanu (2023)
+          </div>
+        </div>
+        <div class="bottom-btn-area">
+          <button class="btn-primary" onclick="goTo('s-smart-food')">Lihat Rekomendasi Makanan →</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 14: PARTNER SYNC
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-partner-sync">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="section-header pink">
+          <div class="back-btn" onclick="goTo('s-dashboard')">← Kembali</div>
+          <div class="sh-title">Partner Sync 💞</div>
+          <div class="sh-sub">Beritahu pasangan tentang kondisimu hari ini</div>
+        </div>
+        <div class="screen-body">
+
+          <!-- Status fase -->
+          <div class="card">
+            <div class="card-title">🌸 Status Fase Saat Ini</div>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:4px">
+              <div style="width:48px;height:48px;background:var(--pb2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🌸</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--p)">Fase Luteal · Hari ke-18</div>
+                <div class="card-sub">Mood: Tenang 😌 · Energi: Sedang (3/5)</div>
+                <div style="font-size:9px;color:var(--pm);margin-top:2px">PMS mungkin muncul dalam beberapa hari</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kontak Pasangan -->
+          <div class="card" id="ps-contact-card">
+            <div class="card-title">📱 Kontak Pasangan</div>
+
+            <!-- Belum ada kontak -->
+            <div id="ps-no-contact" style="display:flex;flex-direction:column;gap:6px;margin-top:6px">
+              <div style="background:var(--pb2);border-radius:10px;padding:10px;text-align:center;margin-bottom:4px">
+                <div style="font-size:24px;margin-bottom:4px">💕</div>
+                <div style="font-size:10px;color:var(--pm)">Belum ada kontak tersimpan.<br>Tambahkan pasanganmu dulu!</div>
+              </div>
+              <div>
+                <div class="inp-label" style="margin-bottom:3px">Nama Pasangan</div>
+                <input id="ps-name" type="text" placeholder="cth: Rizky 💕"
+                  style="width:100%;background:var(--pb);border:1.5px solid var(--ps);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--pt);font-family:'DM Sans',sans-serif;outline:none;transition:border .15s"
+                  onfocus="this.style.borderColor='var(--p)'" onblur="this.style.borderColor='var(--ps)'"
+                  oninput="updatePSPreview()">
+              </div>
+              <div>
+                <div class="inp-label" style="margin-bottom:3px">No. WhatsApp</div>
+                <div style="display:flex;gap:6px">
+                  <div style="background:var(--pb);border:1.5px solid var(--ps);border-radius:10px;padding:9px 10px;font-size:11px;color:var(--pm);font-weight:600;white-space:nowrap">🇮🇩 +62</div>
+                  <input id="ps-phone" type="tel" placeholder="812-3456-7890"
+                    style="flex:1;background:var(--pb);border:1.5px solid var(--ps);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--pt);font-family:'DM Sans',sans-serif;outline:none;transition:border .15s"
+                    onfocus="this.style.borderColor='var(--p)'" onblur="this.style.borderColor='var(--ps)'"
+                    oninput="updatePSPreview()">
+                </div>
+              </div>
+              <button class="btn-primary" style="margin-top:2px" onclick="savePartnerPS()">💾 Simpan Kontak</button>
+            </div>
+
+            <!-- Sudah ada kontak -->
+            <div id="ps-has-contact" style="display:none;margin-top:6px">
+              <div style="display:flex;align-items:center;gap:10px;background:var(--pb);border-radius:10px;padding:10px">
+                <div style="width:40px;height:40px;background:var(--p);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">💞</div>
+                <div style="flex:1">
+                  <div style="font-size:12px;font-weight:700;color:var(--pt)" id="ps-saved-name">—</div>
+                  <div style="font-size:10px;color:var(--pm)" id="ps-saved-phone">—</div>
+                </div>
+                <div onclick="editPartnerPS()" style="font-size:10px;color:var(--p);font-weight:700;cursor:pointer;text-decoration:underline;flex-shrink:0">Ubah</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview pesan WA -->
+          <div class="card" id="ps-preview-card">
+            <div class="card-title">💬 Preview Pesan WhatsApp</div>
+            <div style="margin-top:6px">
+              <div class="wa-bubble" id="ps-wa-preview" style="font-size:10px;line-height:1.6">
+                <div style="font-weight:700;margin-bottom:4px">CycleSync Update dari Aisyah 🌸</div>
+                Hei sayang, FYI aku lagi di fase Luteal nih (hari ke-18 dari 28). Moodku lagi tenang 😌, tapi energiku lagi sedang. Kalau aku agak sensitif belakangan ini, mungkin ini pengaruh hormonal ya — bukan marah sama kamu kok! 💕<br><br>
+                <em style="color:#667;font-size:9px">Dikirim via CycleSync ❤️</em>
+              </div>
+            </div>
+            <div style="margin-top:8px">
+              <div class="hint-box" style="font-size:9px">🔍 Filter aktif: hanya fase, mood umum & energi yang dibagikan. Gejala fisik & data medis tidak dikirim.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tombol aksi -->
+        <div class="bottom-btn-area" id="ps-bottom-area">
+          <button class="btn-primary" id="ps-wa-btn" onclick="sendPartnerWA()"
+            style="display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;font-size:12px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Beritahu Pasangan via WhatsApp
+          </button>
+          <div style="display:flex;gap:8px">
+            <button class="btn-outline" onclick="sendPartnerSMS()" style="font-size:11px;flex:1">💬 Kirim via SMS</button>
+            <button class="btn-outline" onclick="copyPartnerMsg()" style="font-size:11px;flex:1">📋 Salin Pesan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 15: NOTIFIKASI MASA SUBUR
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-notif-fertility">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="section-header" style="background:linear-gradient(145deg,#E65100,#F4A336);padding:22px 18px 14px">
+          <div class="back-btn" onclick="goTo('s-dashboard')">← Kembali</div>
+          <div class="sh-title">🌸 Notifikasi Masa Subur</div>
+          <div class="sh-sub">Goal-Based Notification Engine · Background Process</div>
+        </div>
+        <div class="screen-body">
+          <div style="background:#FFF3E0;border-radius:12px;padding:10px 12px;border-left:3px solid #E65100">
+            <div style="font-size:10px;font-weight:700;color:#E65100;margin-bottom:2px">⚙️ Notif Engine — Berjalan di Background</div>
+            <div style="font-size:9px;color:#5D4037;line-height:1.5">Sistem memeriksa User Goal kamu: <strong>Pelacakan Siklus Rutin</strong>. Notif masa subur dalam mode standar.</div>
+          </div>
+          <div class="card gold-accent">
+            <div class="card-title">📅 Jendela Masa Subur Berikutnya</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+              <div style="background:var(--pb);border-radius:8px;padding:8px;text-align:center">
+                <div style="font-size:9px;color:var(--pm)">Mulai Subur</div>
+                <div style="font-size:13px;font-weight:700;color:var(--p)">21 Feb</div>
+                <div style="font-size:8px;color:var(--pm)">H-2 dari Ovulasi</div>
+              </div>
+              <div style="background:#FFF3E0;border-radius:8px;padding:8px;text-align:center">
+                <div style="font-size:9px;color:#E65100">Puncak Ovulasi</div>
+                <div style="font-size:13px;font-weight:700;color:#E65100">23 Feb</div>
+                <div style="font-size:8px;color:#E65100">🥚 Hari terfertil</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔔 Notifikasi yang Akan Dikirim</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:8px;align-items:flex-start;padding:7px;background:var(--pb);border-radius:8px">
+                <span style="font-size:14px">📅</span>
+                <div>
+                  <div style="font-size:10px;font-weight:700;color:var(--pt)">21 Feb — "Persiapan Masa Subur"</div>
+                  <div style="font-size:9px;color:var(--pm)">H-2 sebelum ovulasi · Dipicu jika User Goal = Promil</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;padding:7px;background:#FFF3E0;border-radius:8px">
+                <span style="font-size:14px">🌟</span>
+                <div>
+                  <div style="font-size:10px;font-weight:700;color:#E65100">23 Feb — "Puncak Masa Subur"</div>
+                  <div style="font-size:9px;color:#8D6E63">Hari ovulasi · Prioritas tinggi untuk pengguna Promil</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;padding:7px;background:#F1F8E9;border-radius:8px">
+                <span style="font-size:14px">💊</span>
+                <div>
+                  <div style="font-size:10px;font-weight:700;color:#558B2F">Notif Kesehatan Umum (Rutin)</div>
+                  <div style="font-size:9px;color:#5D4037">Karena Goal = Siklus Rutin (bukan Promil)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔄 Ubah Goal ke Promil?</div>
+            <div class="card-sub" style="margin-bottom:8px">Aktifkan High-Priority Fertility Reminders untuk notif yang lebih presisi</div>
+            <button class="btn-outline" onclick="goTo('s-goal')">Ubah Goal Sekarang</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SCREEN 16: CALENDAR VIEW
+      ══════════════════════════════════════════ -->
+      <div class="screen" id="s-calendar">
+        <div class="status-bar"><span>9:41</span><span>▲▲ 🔋</span></div>
+        <div class="section-header blush">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div class="nav-header-title">Kalender Siklus</div>
+              <div class="nav-header-sub">Prediksi Moving Average · Maret 2026</div>
+            </div>
+            <div class="sh-tag blush">3 Siklus Data</div>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px">
+            <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;background:var(--p);border-radius:50%"></div><span style="font-size:9px;color:var(--pm)">Haid</span></div>
+            <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;background:#E8F5E9;border:1px solid #81C784;border-radius:50%"></div><span style="font-size:9px;color:var(--pm)">Subur</span></div>
+            <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;background:#FFF3E0;border:2px solid #FFB74D;border-radius:50%"></div><span style="font-size:9px;color:var(--pm)">Ovulasi</span></div>
+            <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;background:#C62828;border-radius:50%"></div><span style="font-size:9px;color:var(--pm)">Hari ini</span></div>
+          </div>
+          <div class="cal-wrap">
+            <div class="cal-head">
+              <span class="cal-nav">‹</span>
+              <span class="cal-month">Maret 2026</span>
+              <span class="cal-nav">›</span>
+            </div>
+            <div class="cal-grid-head">
+              <div class="cal-dh">Se</div><div class="cal-dh">Se</div><div class="cal-dh">Ra</div>
+              <div class="cal-dh">Ka</div><div class="cal-dh">Ju</div><div class="cal-dh">Sa</div><div class="cal-dh">Mi</div>
+            </div>
+            <div class="cal-grid">
+              <div class="cal-day empty"></div>
+              <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day">6</div>
+              <div class="cal-day period">7</div><div class="cal-day period">8</div><div class="cal-day period">9</div><div class="cal-day period">10</div><div class="cal-day period">11</div><div class="cal-day">12</div><div class="cal-day">13</div>
+              <div class="cal-day">14</div><div class="cal-day">15</div><div class="cal-day today">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day">20</div>
+              <div class="cal-day fertile">21</div><div class="cal-day fertile">22</div><div class="cal-day ovulation">23</div><div class="cal-day fertile">24</div><div class="cal-day fertile">25</div><div class="cal-day">26</div><div class="cal-day">27</div>
+              <div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
+            </div>
+          </div>
+          <div class="card accent">
+            <div class="card-title">📊 Prediksi Moving Average</div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1;text-align:center;background:var(--pb);border-radius:8px;padding:7px">
+                <div style="font-size:14px;font-weight:700;color:var(--p)">28 hr</div>
+                <div style="font-size:8px;color:var(--pm)">Rata-rata siklus</div>
+              </div>
+              <div style="flex:1;text-align:center;background:var(--pb);border-radius:8px;padding:7px">
+                <div style="font-size:14px;font-weight:700;color:var(--p)">10 Apr</div>
+                <div style="font-size:8px;color:var(--pm)">Haid berikutnya</div>
+              </div>
+              <div style="flex:1;text-align:center;background:var(--pb);border-radius:8px;padding:7px">
+                <div style="font-size:14px;font-weight:700;color:var(--p)">90%</div>
+                <div style="font-size:8px;color:var(--pm)">Akurasi prediksi</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🌸 Fase Hari Ini — Luteal (Hari 16)</div>
+            <div style="display:flex;gap:6px;margin-top:4px">
+              <div style="flex:1;background:var(--pb);border-radius:8px;padding:6px;text-align:center;opacity:0.6"><div style="font-size:8px;color:var(--pm)">Menstruasi</div><div style="font-size:10px;font-weight:700;color:var(--p)">H1-5</div></div>
+              <div style="flex:1;background:var(--pb);border-radius:8px;padding:6px;text-align:center;opacity:0.6"><div style="font-size:8px;color:var(--pm)">Folikular</div><div style="font-size:10px;font-weight:700;color:var(--p)">H6-13</div></div>
+              <div style="flex:1;background:var(--pb);border-radius:8px;padding:6px;text-align:center;opacity:0.6"><div style="font-size:8px;color:var(--pm)">Ovulasi</div><div style="font-size:10px;font-weight:700;color:var(--p)">H14-15</div></div>
+              <div style="flex:1;background:var(--p);border-radius:8px;padding:6px;text-align:center"><div style="font-size:8px;color:rgba(255,255,255,0.85)">Luteal ✓</div><div style="font-size:10px;font-weight:700;color:white">H16-28</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="goTo('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span class="nav-pill">Beranda</span></div>
+          <div class="nav-item" onclick="goTo('s-calendar')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#D4607A"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg><span class="nav-pill active">Siklus</span></div>
+          <div class="nav-item" onclick="goTo('s-daily-log')"><div class="nav-center-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div><span class="nav-pill" style="margin-top:2px">Log</span></div>
+          <div class="nav-item" onclick="goTo('s-smart-food')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-3.86-3.39-5.35-7.51-5.35C4.38 9.64 1 11.13 1 14.99v1h15.03v-1z"/></svg><span class="nav-pill">Food</span></div>
+          <div class="nav-item" onclick="goTo('s-education')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg><span class="nav-pill">Edukasi</span></div>
+        </div>
+      </div>
+
+    </div><!-- /phone-screen -->
+  </div><!-- /phone-frame -->
+</div><!-- /phone-wrap -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- QUICK NAV BELOW PHONE -->
+<div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:400px">
+  <div style="width:100%;text-align:center;font-size:10px;color:var(--pm);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Navigasi Cepat</div>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid var(--ps);background:var(--pb);color:var(--p);font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-splash')">🏠 Splash</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid var(--ps);background:var(--pb);color:var(--p);font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-dashboard')">📊 Dashboard</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid var(--ps);background:var(--pb);color:var(--p);font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-daily-log')">📋 Daily Log</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid var(--ps);background:var(--pb);color:var(--p);font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-smart-food')">🥗 Smart Food</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid var(--ps);background:var(--pb);color:var(--p);font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-education')">📚 Edukasi</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid var(--ps);background:var(--pb);color:var(--p);font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-partner-sync')">💞 Partner Sync</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid var(--ps);background:var(--pb);color:var(--p);font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-notif-fertility')">🌸 Notif Subur</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid var(--ps);background:var(--pb);color:var(--p);font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-calendar')">🗓️ Kalender</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid #CE93D8;background:#F3E5F5;color:#7B5EA7;font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-pregnancy-mode')">🤰 Pregnancy Mode</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid #CE93D8;background:#F3E5F5;color:#7B5EA7;font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-pregnancy-hpl')">📅 Kalender HPL</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid #CE93D8;background:#F3E5F5;color:#7B5EA7;font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-postpartum')">🎊 Selesai Hamil</button>
+  <button style="padding:5px 10px;border-radius:20px;border:1px solid #A5D6A7;background:#F1F8E9;color:#2E7D32;font-size:9px;font-weight:600;cursor:pointer" onclick="goTo('s-postpartum-dashboard')">🌸 Dashboard Pasca-Lahir</button>
+</div>
+
+<script>
+// ─── SCREEN LABELS ───
+const screenLabels = {
+  's-splash': 'Splash Screen',
+  's-signup': 'Sign Up',
+  's-personal': 'Data Pribadi (1/4)',
+  's-goal': 'Pilih Goal (2/4)',
+  's-lmp': 'Input LMP (3/4)',
+  's-calculating': 'Kalkulasi Siklus',
+  's-notif-setup': 'Set Notifikasi (4/4)',
+  's-dashboard': 'Dashboard Utama',
+  's-daily-log': 'Daily Log',
+  's-pregnancy-detect': 'Deteksi Kehamilan',
+  's-pregnancy-mode': 'Pregnancy Mode — Beranda',
+  's-pregnancy-hpl': 'Kalender HPL & Milestone',
+  's-postpartum': 'Selesai Hamil — Konfirmasi',
+  's-postpartum-reset': 'Reset ke Siklus Normal',
+  's-postpartum-dashboard': 'Dashboard Pasca-Lahir',
+  's-smart-food': 'Smart Food & Exercise',
+  's-education': 'Education Center',
+  's-article': 'Artikel Edukasi',
+  's-partner-sync': 'Partner Sync',
+  's-notif-fertility': 'Notif Masa Subur',
+  's-calendar': 'Kalender Siklus',
+};
+
+let currentScreen = 's-splash';
+let calculatingTimer = null;
+let isPregnant = false; // global pregnancy state
+
+// ─── NAVIGATION ───
+const PREGNANCY_SCREENS = ['s-pregnancy-mode', 's-pregnancy-hpl', 's-postpartum'];
+
+function goTo(targetId) {
+  // Auto-set pregnancy state based on destination screen
+  if (PREGNANCY_SCREENS.includes(targetId)) {
+    isPregnant = true;
+  }
+  // Reset pregnancy state when going back to normal flows
+  if (targetId === 's-postpartum-dashboard' || targetId === 's-dashboard') {
+    if (targetId === 's-postpartum-dashboard') isPregnant = false;
+  }
+
+  // If user is pregnant and trying to go to normal dashboard → redirect to pregnancy home
+  if (isPregnant && targetId === 's-dashboard') {
+    targetId = 's-pregnancy-mode';
+  }
+
+  const current = document.querySelector('.screen.active');
+  const target = document.getElementById(targetId);
+  if (!target || target === current) return;
+
+  if (calculatingTimer) { clearTimeout(calculatingTimer); calculatingTimer = null; }
+
+  current.classList.add('exit');
+  current.classList.remove('active');
+  setTimeout(() => { current.classList.remove('exit'); }, 350);
+
+  target.style.transform = 'translateX(30px)';
+  target.style.opacity = '0';
+  target.classList.add('active');
+  setTimeout(() => {
+    target.style.transform = '';
+    target.style.opacity = '';
+  }, 20);
+
+  currentScreen = targetId;
+  document.getElementById('screen-label').textContent = screenLabels[targetId] || targetId;
+
+  // Auto-advance from calculating screen
+  if (targetId === 's-calculating') {
+    calculatingTimer = setTimeout(() => { goTo('s-notif-setup'); }, 2800);
+  }
+  // Render dynamic screens
+  if (targetId === 's-smart-food') { currentFoodTab = 'food'; setTimeout(renderSmartFood, 30); }
+  if (targetId === 's-education') { setTimeout(renderEducation, 30); }
+  if (targetId === 's-partner-sync') { loadPartnerSync(); }
+}
+
+// ─── GOAL SELECTION ───
+let selectedGoal = 'rutin';
+function selectGoal(goal) {
+  selectedGoal = goal;
+  const rutin = document.getElementById('goal-rutin');
+  const promil = document.getElementById('goal-promil');
+  const checkR = document.getElementById('check-rutin');
+  const checkP = document.getElementById('check-promil');
+  const btn = document.getElementById('btn-goal-next');
+
+  if (goal === 'rutin') {
+    rutin.classList.add('selected'); promil.classList.remove('selected');
+    checkR.style.background = 'var(--p)'; checkR.textContent = '✓'; checkR.style.fontSize = '';
+    checkP.style.background = 'var(--ps)'; checkP.textContent = ''; checkP.style.fontSize = '0';
+    btn.textContent = 'Lanjut dengan Pelacakan Rutin →';
+  } else {
+    promil.classList.add('selected'); rutin.classList.remove('selected');
+    checkP.style.background = '#E65100'; checkP.textContent = '✓'; checkP.style.fontSize = '';
+    checkR.style.background = 'var(--ps)'; checkR.textContent = ''; checkR.style.fontSize = '0';
+    btn.textContent = 'Lanjut dengan Promil →';
+  }
+}
+
+// ─── TOGGLE SEG BUTTONS ───
+function toggleSeg(el) {
+  const siblings = el.parentElement.querySelectorAll('.seg-btn');
+  siblings.forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ─── TOGGLE SWITCH ───
+function toggleSwitch(el) {
+  el.classList.toggle('on');
+}
+
+// ─── MOOD SELECTION ───
+function selectMood(item) {
+  const all = item.closest('.mood-grid').querySelectorAll('.mood-item');
+  all.forEach(m => {
+    m.querySelector('.mood-circle').classList.remove('active');
+    m.querySelector('.mood-lbl').style.color = '';
+    m.querySelector('.mood-lbl').style.fontWeight = '';
+    m.querySelector('.mood-lbl').textContent = m.querySelector('.mood-lbl').textContent.replace(' ✓','');
+  });
+  item.querySelector('.mood-circle').classList.add('active');
+  item.querySelector('.mood-lbl').style.color = 'var(--p)';
+  item.querySelector('.mood-lbl').style.fontWeight = '700';
+  const lbl = item.querySelector('.mood-lbl');
+  if (!lbl.textContent.includes('✓')) lbl.textContent += ' ✓';
+}
+
+// ─── ENERGY BAR ───
+let energyLevel = 3;
+function setEnergy(level) {
+  energyLevel = level;
+  const segs = document.querySelectorAll('#energy-bar .e-seg');
+  segs.forEach((s, i) => {
+    s.classList.toggle('filled', i < level);
+    s.classList.toggle('empty', i >= level);
+  });
+  document.getElementById('energy-val').textContent = level + ' / 5';
+}
+
+// ─── TOGGLE CHIP ───
+function toggleChip(el) { el.classList.toggle('active'); }
+
+// ─── SMART FOOD TABS (legacy, used by renderSmartFood) ───
+let currentFoodTab = 'food';
+function switchFoodTab(tab) {
+  currentFoodTab = tab;
+  renderSmartFood();
+}
+
+// ─── GOBACK helper: respects pregnancy mode ───
+function goBack(from) {
+  if (isPregnant) { goTo('s-pregnancy-mode'); }
+  else { goTo('s-dashboard'); }
+}
+
+// ─── RENDER SMART FOOD based on isPregnant ───
+function renderSmartFood() {
+  const body = document.getElementById('sf-body');
+  const badge = document.getElementById('sf-badge');
+  const sub = document.getElementById('sf-sub');
+  const header = document.getElementById('sf-header');
+
+  if (isPregnant) {
+    // ── PREGNANCY MODE ──
+    badge.textContent = '🤰 Kehamilan'; badge.style.background = '#7B5EA7';
+    sub.textContent = 'Khusus Ibu Hamil · Trimester 1';
+    header.style.borderBottom = '2px solid #CE93D8';
+
+    const tabs = ['food','exercise','supplement'];
+    const labels = ['🥗 Nutrisi','🧘 Olahraga','💊 Suplemen'];
+    let tabBar = `<div class="tab-bar" style="margin-bottom:0">`;
+    tabs.forEach((t,i) => {
+      tabBar += `<div class="tab${t===currentFoodTab?' active':''}" style="${t===currentFoodTab?'background:#7B5EA7':''}" onclick="currentFoodTab='${t}';renderSmartFood()">${labels[i]}</div>`;
+    });
+    tabBar += `</div>`;
+
+    let content = '';
+    if (currentFoodTab === 'food') {
+      content = `
+        <div class="hint-box" style="border-color:#7B5EA7;background:#F3E5F5">
+          🤰 <strong>Trimester 1:</strong> Fokus asam folat, zat besi, & protein untuk perkembangan janin
+        </div>
+        <div class="food-card">
+          <div class="food-icon" style="background:#F3E5F5">🥦</div>
+          <div><div class="food-name">Sayuran Hijau (Brokoli, Bayam)</div><div class="food-why">Asam folat esensial untuk mencegah cacat tabung saraf janin di trimester 1</div>
+          <div class="tag-row"><span class="tag" style="background:#E8F5E9;color:#2E7D32">Asam Folat</span><span class="tag" style="background:#E3F2FD;color:#1565C0">Zat Besi</span><span class="tag" style="background:#F3E5F5;color:#7B5EA7">⭐ Wajib</span></div></div>
+        </div>
+        <div class="food-card">
+          <div class="food-icon" style="background:#E3F2FD">🐟</div>
+          <div><div class="food-name">Ikan Rendah Merkuri (Salmon, Sarden)</div><div class="food-why">Omega-3 DHA mendukung perkembangan otak & mata janin</div>
+          <div class="tag-row"><span class="tag" style="background:#E3F2FD;color:#1565C0">Omega-3</span><span class="tag" style="background:#E8F5E9;color:#2E7D32">DHA</span></div></div>
+        </div>
+        <div class="food-card">
+          <div class="food-icon" style="background:#FFF8E1">🥚</div>
+          <div><div class="food-name">Telur</div><div class="food-why">Protein lengkap & kolin untuk perkembangan otak & sistem saraf janin</div>
+          <div class="tag-row"><span class="tag" style="background:#FFF8E1;color:#F57F17">Protein</span><span class="tag" style="background:#F3E5F5;color:#7B5EA7">Kolin</span></div></div>
+        </div>
+        <div class="food-card">
+          <div class="food-icon" style="background:#FCE4EC">🥛</div>
+          <div><div class="food-name">Susu & Yogurt (Pasteurisasi)</div><div class="food-why">Kalsium & Vitamin D untuk pembentukan tulang janin</div>
+          <div class="tag-row"><span class="tag" style="background:#E8F5E9;color:#2E7D32">Kalsium</span><span class="tag" style="background:#E3F2FD;color:#1565C0">Vit D</span></div></div>
+        </div>
+        <div style="height:4px"></div>
+        <div class="sec-label" style="color:#C62828">⚠️ Hindari Saat Hamil</div>
+        <div class="card" style="border-left:3px solid #EF5350;background:#FFEBEE">
+          <div style="display:flex;gap:6px;align-items:center"><span style="font-size:16px">🍣</span><div class="card-sub"><strong>Ikan mentah / sashimi</strong> — risiko bakteri & merkuri tinggi</div></div>
+        </div>
+        <div class="card" style="border-left:3px solid #EF5350;background:#FFEBEE">
+          <div style="display:flex;gap:6px;align-items:center"><span style="font-size:16px">☕</span><div class="card-sub"><strong>Kafein &gt;200mg/hari</strong> — berisiko keguguran & berat lahir rendah</div></div>
+        </div>
+        <div class="card" style="border-left:3px solid #EF5350;background:#FFEBEE">
+          <div style="display:flex;gap:6px;align-items:center"><span style="font-size:16px">🧀</span><div class="card-sub"><strong>Keju lunak tidak pasteurisasi</strong> — risiko listeria berbahaya bagi janin</div></div>
+        </div>`;
+    } else if (currentFoodTab === 'exercise') {
+      content = `
+        <div class="hint-box" style="border-color:#7B5EA7;background:#F3E5F5">
+          🧘 Trimester 1: Olahraga ringan-sedang aman. Hindari gerakan berbaring telentang terlalu lama & benturan keras
+        </div>
+        <div class="ex-card">
+          <div class="ex-header"><div class="ex-name">🧘 Yoga Kehamilan</div><div class="lbl-badge" style="background:#F3E5F5;color:#7B5EA7">⭐ Ideal</div></div>
+          <div class="card-sub">Melatih pernapasan, fleksibilitas & relaksasi. Khusus gerakan aman trimester 1 — hindari pose berbaring telentang.</div>
+          <div style="font-size:9px;color:var(--pm);margin-top:6px">Intensitas:</div>
+          <div class="intensity"><div class="int-seg" style="background:#7B5EA7"></div><div class="int-seg" style="background:#7B5EA7"></div><div class="int-seg" style="background:#D1C4E9"></div><div class="int-seg" style="background:#D1C4E9"></div><div class="int-seg" style="background:#D1C4E9"></div></div>
+        </div>
+        <div class="ex-card">
+          <div class="ex-header"><div class="ex-name">🚶 Jalan Kaki Pagi</div><div class="lbl-badge" style="background:#E8F5E9;color:#2E7D32">Sangat Aman</div></div>
+          <div class="card-sub">20-30 menit setiap hari. Menjaga berat badan ideal, meningkatkan sirkulasi darah & mood.</div>
+          <div style="font-size:9px;color:var(--pm);margin-top:6px">Intensitas:</div>
+          <div class="intensity"><div class="int-seg" style="background:#7B5EA7"></div><div class="int-seg" style="background:#D1C4E9"></div><div class="int-seg" style="background:#D1C4E9"></div><div class="int-seg" style="background:#D1C4E9"></div><div class="int-seg" style="background:#D1C4E9"></div></div>
+        </div>
+        <div class="ex-card">
+          <div class="ex-header"><div class="ex-name">🏊 Renang</div><div class="lbl-badge" style="background:#E8F5E9;color:#2E7D32">Aman</div></div>
+          <div class="card-sub">Olahraga terbaik ibu hamil — meringankan beban tubuh, mengurangi nyeri punggung & mual.</div>
+          <div style="font-size:9px;color:var(--pm);margin-top:6px">Intensitas:</div>
+          <div class="intensity"><div class="int-seg" style="background:#7B5EA7"></div><div class="int-seg" style="background:#7B5EA7"></div><div class="int-seg" style="background:#D1C4E9"></div><div class="int-seg" style="background:#D1C4E9"></div><div class="int-seg" style="background:#D1C4E9"></div></div>
+        </div>
+        <div class="ex-card">
+          <div class="ex-header"><div class="ex-name">🏋️ HIIT / Angkat Beban Berat</div><div class="lbl-badge" style="background:#FFEBEE;color:#C62828">Hindari</div></div>
+          <div class="card-sub">Tekanan perut berlebihan berisiko. Konsultasikan dengan dokter sebelum melanjutkan latihan intens.</div>
+          <div style="font-size:9px;color:var(--pm);margin-top:6px">Intensitas:</div>
+          <div class="intensity"><div class="int-seg" style="background:#EF5350"></div><div class="int-seg" style="background:#EF5350"></div><div class="int-seg" style="background:#EF5350"></div><div class="int-seg" style="background:#EF5350"></div><div class="int-seg" style="background:#EF5350"></div></div>
+        </div>`;
+    } else {
+      content = `
+        <div class="hint-box" style="border-color:#7B5EA7;background:#F3E5F5">💊 Suplemen wajib & direkomendasikan selama kehamilan berdasarkan panduan medis</div>
+        <div class="card" style="border-left:3px solid #7B5EA7">
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:18px">🟢</span>
+          <div><div class="card-title" style="margin-bottom:2px;color:#2E7D32">Asam Folat 400mcg — WAJIB</div><div class="card-sub">Mulai sebelum hamil & lanjut trimester 1. Mencegah cacat tabung saraf pada janin.</div></div></div>
+        </div>
+        <div class="card" style="border-left:3px solid #7B5EA7">
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:18px">🔴</span>
+          <div><div class="card-title" style="margin-bottom:2px">Zat Besi 27mg/hari</div><div class="card-sub">Mencegah anemia selama kehamilan. Minum bersama Vitamin C untuk penyerapan optimal.</div></div></div>
+        </div>
+        <div class="card" style="border-left:3px solid #7B5EA7">
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:18px">☀️</span>
+          <div><div class="card-title" style="margin-bottom:2px">Vitamin D3 600-2000 IU</div><div class="card-sub">Perkembangan tulang janin & imunitas ibu. Konsultasikan dosis dengan dokter kandungan.</div></div></div>
+        </div>
+        <div class="card" style="border-left:3px solid #7B5EA7">
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:18px">🐟</span>
+          <div><div class="card-title" style="margin-bottom:2px">DHA/Omega-3 200mg</div><div class="card-sub">Mendukung perkembangan otak & retina janin. Pilih suplemen bebas merkuri.</div></div></div>
+        </div>
+        <div class="card" style="background:#FFF8E1;border-left:3px solid var(--gold)">
+          <div style="font-size:10px;font-weight:700;color:#E65100;margin-bottom:4px">⚠️ Penting</div>
+          <div class="card-sub">Konsultasikan semua suplemen dengan dokter kandunganmu. Jangan mengonsumsi vitamin A dosis tinggi selama kehamilan.</div>
+        </div>`;
+    }
+    body.innerHTML = tabBar + `<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">${content}</div>`;
+
+  } else {
+    // ── NORMAL CYCLE MODE ──
+    badge.textContent = '🌸 Luteal'; badge.style.background = 'var(--p)';
+    sub.textContent = 'Disesuaikan Fase Luteal · Hari ke-18';
+    header.style.borderBottom = '';
+
+    const tabs = ['food','exercise','supplement'];
+    const labels = ['🥗 Nutrisi','🏃 Olahraga','💊 Suplemen'];
+    let tabBar = `<div class="tab-bar" style="margin-bottom:0">`;
+    tabs.forEach((t,i) => {
+      tabBar += `<div class="tab${t===currentFoodTab?' active':''}" onclick="currentFoodTab='${t}';renderSmartFood()">${labels[i]}</div>`;
+    });
+    tabBar += `</div>`;
+
+    let content = '';
+    if (currentFoodTab === 'food') {
+      content = `
+        <div class="hint-box">🔬 <strong>Fase Luteal:</strong> Progesteron tinggi — konsumsi anti-inflamasi & mineral untuk stabilkan mood & kurangi gejala PMS</div>
+        <div class="food-card"><div class="food-icon">🥛</div><div><div class="food-name">Susu & Produk Susu</div><div class="food-why">Kalsium tinggi terbukti mengurangi nyeri menstruasi & stabilkan mood PMS</div><div class="tag-row"><span class="tag" style="background:#E8F5E9;color:#2E7D32">Kalsium</span><span class="tag" style="background:#E3F2FD;color:#1565C0">Vit D</span><span class="tag" style="background:var(--pb);color:var(--p)">Direkomendasikan</span></div></div></div>
+        <div class="food-card"><div class="food-icon">🫚</div><div><div class="food-name">Kunyit (Curcumin)</div><div class="food-why">Anti-inflamasi alami, meredakan dismenore dan peradangan saat haid</div><div class="tag-row"><span class="tag" style="background:#FFF8E1;color:#F57F17">Anti-inflamasi</span><span class="tag" style="background:var(--pb);color:var(--p)">⭐ Terbaik</span></div></div></div>
+        <div class="food-card"><div class="food-icon">🥬</div><div><div class="food-name">Sayuran Hijau Gelap</div><div class="food-why">Zat besi & magnesium — kurangi kram otot & boost energi</div><div class="tag-row"><span class="tag" style="background:#E8F5E9;color:#2E7D32">Zat Besi</span><span class="tag" style="background:#F3E5F5;color:#6A1B9A">Magnesium</span></div></div></div>
+        <div class="food-card"><div class="food-icon">🍫</div><div><div class="food-name">Dark Chocolate &gt;70%</div><div class="food-why">Magnesium & serotonin booster alami untuk mood swing fase luteal</div><div class="tag-row"><span class="tag" style="background:#FBE9E7;color:#BF360C">Magnesium</span><span class="tag" style="background:#FCE4EC;color:#880E4F">Mood Booster</span></div></div></div>
+        <div style="height:4px"></div>
+        <div class="sec-label">Hindari Saat Ini</div>
+        <div class="card" style="border-left:3px solid #EF5350"><div style="display:flex;gap:6px;align-items:center"><span style="font-size:16px">☕</span><div class="card-sub"><strong>Kafein berlebihan</strong> — memperburuk kecemasan & kram PMS</div></div></div>
+        <div class="card" style="border-left:3px solid #EF5350"><div style="display:flex;gap:6px;align-items:center"><span style="font-size:16px">🧂</span><div class="card-sub"><strong>Makanan asin/processed</strong> — menyebabkan kembung & retensi air</div></div></div>
+        <div class="card" style="cursor:pointer" onclick="goTo('s-education')"><div style="font-size:10px;color:var(--p);font-weight:700">📚 Lihat dasar ilmiah rekomendasi ini →</div></div>`;
+    } else if (currentFoodTab === 'exercise') {
+      content = `
+        <div class="hint-box">🏃 Fase Luteal: intensitas sedang ke bawah lebih ideal — fokus pada pemulihan & relaksasi</div>
+        <div class="ex-card"><div class="ex-header"><div class="ex-name">🧘 Yoga & Pilates</div><div class="lbl-badge" style="background:var(--pb);color:var(--p)">⭐ Ideal</div></div><div class="card-sub">Relaksasi & kurangi stres hormonal. 30-45 menit, fokus breathing.</div><div style="font-size:9px;color:var(--pm);margin-top:6px">Intensitas:</div><div class="intensity"><div class="int-seg" style="background:var(--p)"></div><div class="int-seg" style="background:var(--p)"></div><div class="int-seg" style="background:var(--ps)"></div><div class="int-seg" style="background:var(--ps)"></div><div class="int-seg" style="background:var(--ps)"></div></div></div>
+        <div class="ex-card"><div class="ex-header"><div class="ex-name">🚶 Jalan Santai</div><div class="lbl-badge" style="background:#E8F5E9;color:#2E7D32">Aman</div></div><div class="card-sub">20-30 menit jalan kaki di pagi hari — boost endorfin & mood secara alami</div><div style="font-size:9px;color:var(--pm);margin-top:6px">Intensitas:</div><div class="intensity"><div class="int-seg" style="background:var(--p)"></div><div class="int-seg" style="background:var(--ps)"></div><div class="int-seg" style="background:var(--ps)"></div><div class="int-seg" style="background:var(--ps)"></div><div class="int-seg" style="background:var(--ps)"></div></div></div>
+        <div class="ex-card"><div class="ex-header"><div class="ex-name">🏋️ HIIT / Strength Training</div><div class="lbl-badge" style="background:#FFEBEE;color:#C62828">Hindari</div></div><div class="card-sub">Intensitas tinggi tidak ideal saat fase luteal — simpan untuk fase ovulasi & folikular</div><div style="font-size:9px;color:var(--pm);margin-top:6px">Intensitas:</div><div class="intensity"><div class="int-seg" style="background:#EF5350"></div><div class="int-seg" style="background:#EF5350"></div><div class="int-seg" style="background:#EF5350"></div><div class="int-seg" style="background:#EF5350"></div><div class="int-seg" style="background:#EF5350"></div></div></div>`;
+    } else {
+      content = `
+        <div class="hint-box">💊 Suplemen yang terbukti efektif untuk fase Luteal berdasarkan literatur ilmiah</div>
+        <div class="card accent"><div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:18px">🫧</span><div><div class="card-title" style="margin-bottom:2px">Magnesium 200-400mg</div><div class="card-sub">Mengurangi kram, kecemasan, & gangguan tidur. Minum malam hari.</div></div></div></div>
+        <div class="card accent"><div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:18px">🧡</span><div><div class="card-title" style="margin-bottom:2px">Vitamin B6 50-100mg</div><div class="card-sub">Membantu sintesis serotonin — stabilkan mood swing PMS secara alami.</div></div></div></div>
+        <div class="card accent"><div style="display:flex;gap:8px;align-items:flex-start"><span style="font-size:18px">☀️</span><div><div class="card-title" style="margin-bottom:2px">Vitamin D3 1000-2000 IU</div><div class="card-sub">Defisiensi Vit D terkait intensitas PMS lebih parah. Minum pagi.</div></div></div></div>`;
+    }
+    body.innerHTML = tabBar + `<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">${content}</div>`;
+  }
+}
+
+// ─── RENDER EDUCATION based on isPregnant ───
+function renderEducation() {
+  const body = document.getElementById('edu-body');
+  const nav = document.getElementById('edu-nav');
+  const backBtn = document.getElementById('edu-back-btn');
+  const title = document.getElementById('edu-title');
+  const badge = document.getElementById('edu-mode-badge');
+
+  if (isPregnant) {
+    backBtn.style.display = 'block';
+    title.textContent = 'Edukasi Kehamilan';
+    badge.style.display = 'inline-block';
+    badge.innerHTML = '<span style="background:#7B5EA7;color:white;font-size:8px;padding:3px 8px;border-radius:10px;font-weight:700">🤰 Mode Hamil</span>';
+    // Update nav: home goes to pregnancy-mode
+    nav.querySelector('.nav-item').onclick = () => goTo('s-pregnancy-mode');
+
+    body.innerHTML = `
+      <div class="scroll-tabs">
+        <div class="scroll-tab active" onclick="toggleScrollTab(this)">Semua</div>
+        <div class="scroll-tab" onclick="toggleScrollTab(this)">🤰 Kehamilan</div>
+        <div class="scroll-tab" onclick="toggleScrollTab(this)">🍼 Nutrisi Hamil</div>
+        <div class="scroll-tab" onclick="toggleScrollTab(this)">🧘 Olahraga Hamil</div>
+        <div class="scroll-tab" onclick="toggleScrollTab(this)">💜 Mental</div>
+      </div>
+      <div class="art-featured" onclick="goTo('s-article')" style="background:linear-gradient(120deg,#7B5EA7,#B88FD8)">
+        <div style="display:inline-block;background:rgba(255,255,255,0.28);color:white;font-size:9px;padding:3px 9px;border-radius:10px;font-weight:700;margin-bottom:8px">📌 Untuk Trimester 1-mu</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:16px;color:white;line-height:1.3">Perkembangan Janin Minggu per Minggu</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.85);margin-top:4px">Apa yang terjadi di dalam rahimmu setiap minggunya</div>
+        <div style="margin-top:10px;font-size:10px;font-weight:700;color:white">Baca Sekarang →</div>
+      </div>
+      <div class="art-card" onclick="goTo('s-article')">
+        <div class="art-thumb" style="background:#F3E5F5">🥗</div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#7B5EA7;text-transform:uppercase;letter-spacing:0.3px">Nutrisi Kehamilan</div>
+          <div style="font-size:11px;font-weight:700;color:var(--pt);margin-top:2px;line-height:1.3">Asam Folat & Nutrisi Wajib Trimester 1</div>
+          <div style="font-size:9px;color:var(--pm);margin-top:3px">6 menit baca · Panduan dokter</div>
+        </div>
+      </div>
+      <div class="art-card" onclick="goTo('s-article')">
+        <div class="art-thumb" style="background:#EDE7F6">🤢</div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#7B5EA7;text-transform:uppercase;letter-spacing:0.3px">Gejala Kehamilan</div>
+          <div style="font-size:11px;font-weight:700;color:var(--pt);margin-top:2px;line-height:1.3">Morning Sickness: Cara Mengatasinya Secara Alami</div>
+          <div style="font-size:9px;color:var(--pm);margin-top:3px">4 menit baca · Tips praktis</div>
+        </div>
+      </div>
+      <div class="art-card" onclick="goTo('s-article')">
+        <div class="art-thumb" style="background:#E8EAF6">🧘</div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#7B5EA7;text-transform:uppercase;letter-spacing:0.3px">Olahraga Hamil</div>
+          <div style="font-size:11px;font-weight:700;color:var(--pt);margin-top:2px;line-height:1.3">Yoga Kehamilan: Gerakan Aman Trimester 1</div>
+          <div style="font-size:9px;color:var(--pm);margin-top:3px">5 menit baca · Berbasis bukti medis</div>
+        </div>
+      </div>
+      <div class="art-card" onclick="goTo('s-article')">
+        <div class="art-thumb" style="background:#FCE4EC">💜</div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#7B5EA7;text-transform:uppercase;letter-spacing:0.3px">Kesehatan Mental</div>
+          <div style="font-size:11px;font-weight:700;color:var(--pt);margin-top:2px;line-height:1.3">Mengelola Kecemasan & Mood Swing di Awal Kehamilan</div>
+          <div style="font-size:9px;color:var(--pm);margin-top:3px">7 menit baca · Psikologi kehamilan</div>
+        </div>
+      </div>
+      <div class="art-card" onclick="goTo('s-article')">
+        <div class="art-thumb" style="background:#F3E5F5">💞</div>
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#7B5EA7;text-transform:uppercase;letter-spacing:0.3px">Pasangan</div>
+          <div style="font-size:11px;font-weight:700;color:var(--pt);margin-top:2px;line-height:1.3">Peran Suami di Trimester Pertama Kehamilan</div>
+          <div style="font-size:9px;color:var(--pm);margin-top:3px">4 menit baca · Panduan pasangan</div>
+        </div>
+      </div>`;
+
+    // Update bottom nav for pregnancy
+    nav.innerHTML = `
+      <div class="nav-item" onclick="goTo('s-pregnancy-mode')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span class="nav-pill">Beranda</span></div>
+      <div class="nav-item" onclick="goTo('s-pregnancy-hpl')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#7B5EA7"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg><span class="nav-pill" style="color:#7B5EA7;font-weight:700">HPL</span></div>
+      <div class="nav-item" onclick="goTo('s-daily-log')"><div class="nav-center-btn" style="background:#7B5EA7"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div><span class="nav-pill" style="color:#7B5EA7;margin-top:2px">Log</span></div>
+      <div class="nav-item" onclick="goTo('s-smart-food')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-3.86-3.39-5.35-7.51-5.35C4.38 9.64 1 11.13 1 14.99v1h15.03v-1z"/></svg><span class="nav-pill">Nutrisi</span></div>
+      <div class="nav-item" onclick="goTo('s-education')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#7B5EA7"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg><span class="nav-pill active" style="color:#7B5EA7">Edukasi</span></div>`;
+
+  } else {
+    // ── NORMAL MODE ──
+    backBtn.style.display = 'none';
+    title.textContent = 'Education Center';
+    badge.style.display = 'none';
+
+    body.innerHTML = `
+      <div class="scroll-tabs">
+        <div class="scroll-tab active" onclick="toggleScrollTab(this)">Semua</div>
+        <div class="scroll-tab" onclick="toggleScrollTab(this)">🌸 Hormon</div>
+        <div class="scroll-tab" onclick="toggleScrollTab(this)">🥗 Nutrisi</div>
+        <div class="scroll-tab" onclick="toggleScrollTab(this)">🏃 Olahraga</div>
+        <div class="scroll-tab" onclick="toggleScrollTab(this)">💞 Pasangan</div>
+        <div class="scroll-tab" onclick="toggleScrollTab(this)">🤰 Kehamilan</div>
+      </div>
+      <div class="art-featured" onclick="goTo('s-article')">
+        <div style="display:inline-block;background:rgba(255,255,255,0.28);color:white;font-size:9px;padding:3px 9px;border-radius:10px;font-weight:700;margin-bottom:8px">📌 Untuk Fase Luteal-mu</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:16px;color:white;line-height:1.3">Mengapa Kamu Lebih Emosional di Akhir Siklus?</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.85);margin-top:4px">Memahami fluktuasi progesteron & cara mengatasinya</div>
+        <div style="margin-top:10px;font-size:10px;font-weight:700;color:white">Baca Sekarang →</div>
+      </div>
+      <div class="art-card" onclick="goTo('s-article')"><div class="art-thumb" style="background:var(--pb)">🥗</div><div><div style="font-size:9px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:0.3px">Nutrisi</div><div style="font-size:11px;font-weight:700;color:var(--pt);margin-top:2px;line-height:1.3">Makanan Terbaik untuk Setiap Fase Menstruasi</div><div style="font-size:9px;color:var(--pm);margin-top:3px">5 menit baca · Sumber ilmiah</div></div></div>
+      <div class="art-card" onclick="goTo('s-article')"><div class="art-thumb" style="background:#E8F5E9">🏃</div><div><div style="font-size:9px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:0.3px">Olahraga</div><div style="font-size:11px;font-weight:700;color:var(--pt);margin-top:2px;line-height:1.3">HIIT vs Yoga: Kapan Waktu Terbaik Berolahraga?</div><div style="font-size:9px;color:var(--pm);margin-top:3px">4 menit baca · Berbasis riset 2024</div></div></div>
+      <div class="art-card" onclick="goTo('s-article')"><div class="art-thumb" style="background:#F3E5F5">🧠</div><div><div style="font-size:9px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:0.3px">Hormon & Mental</div><div style="font-size:11px;font-weight:700;color:var(--pt);margin-top:2px;line-height:1.3">Estrogen, Dopamin & Produktivitas Kerja Wanita</div><div style="font-size:9px;color:var(--pm);margin-top:3px">7 menit baca · Riset terbaru 2024</div></div></div>
+      <div class="art-card" onclick="goTo('s-article')"><div class="art-thumb" style="background:var(--pb)">💞</div><div><div style="font-size:9px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:0.3px">Pasangan</div><div style="font-size:11px;font-weight:700;color:var(--pt);margin-top:2px;line-height:1.3">Cara Memberi Tahu Pasangan Tentang Siklusmu</div><div style="font-size:9px;color:var(--pm);margin-top:3px">3 menit baca · Panduan praktis</div></div></div>`;
+
+    nav.innerHTML = `
+      <div class="nav-item" onclick="goTo('s-dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span class="nav-pill">Beranda</span></div>
+      <div class="nav-item" onclick="goTo('s-calendar')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg><span class="nav-pill">Siklus</span></div>
+      <div class="nav-item" onclick="goTo('s-daily-log')"><div class="nav-center-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div><span class="nav-pill" style="margin-top:2px">Log</span></div>
+      <div class="nav-item" onclick="goTo('s-smart-food')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8A6470"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-3.86-3.39-5.35-7.51-5.35C4.38 9.64 1 11.13 1 14.99v1h15.03v-1z"/></svg><span class="nav-pill">Food</span></div>
+      <div class="nav-item" onclick="goTo('s-education')"><svg width="18" height="18" viewBox="0 0 24 24" fill="#D4607A"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg><span class="nav-pill active">Edukasi</span></div>`;
+  }
+}
+
+// ─── SCROLL TABS ───
+function toggleScrollTab(el) {
+  el.closest('.scroll-tabs').querySelectorAll('.scroll-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ─── CALENDAR DAY SELECT ───
+function selectDay(el) {
+  el.closest('.cal-grid').querySelectorAll('.cal-day.selected').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ─── SAVE LOG ───
+function saveLog() {
+  showToast('✅ Log berhasil disimpan & dienkripsi!');
+  setTimeout(() => goTo('s-dashboard'), 1200);
+}
+
+// ─── PREGNANCY STATE ───
+// Screens yang harus tetap di pregnancy home jika tombol "home" ditekan saat hamil
+const PREG_SCREENS = ['s-pregnancy-mode','s-pregnancy-hpl','s-postpartum','s-postpartum-reset','s-postpartum-dashboard'];
+
+function checkPregnancy(toggle) {
+  if (toggle.classList.contains('on')) {
+    setTimeout(() => goTo('s-pregnancy-detect'), 500);
+  }
+}
+
+function confirmPregnancy() {
+  isPregnant = true;
+  showToast('🤰 Status diperbarui ke mode kehamilan!');
+  setTimeout(() => goTo('s-pregnancy-mode'), 1000);
+}
+
+function endPregnancy() {
+  goTo('s-postpartum-reset');
+  setTimeout(() => {
+    isPregnant = false;
+    goTo('s-postpartum-dashboard');
+  }, 2600);
+}
+
+function loadPartnerSync() {
+  // If we already have saved partner data, show saved state
+  if (partnerName || partnerPhone) {
+    document.getElementById('ps-no-contact').style.display = 'none';
+    document.getElementById('ps-has-contact').style.display = 'block';
+    document.getElementById('ps-saved-name').textContent = partnerName || '(Tanpa nama)';
+    document.getElementById('ps-saved-phone').textContent = '+62' + partnerPhone;
+    // Update preview with saved name
+    updatePSPreview();
+  } else {
+    document.getElementById('ps-no-contact').style.display = 'flex';
+    document.getElementById('ps-has-contact').style.display = 'none';
+  }
+}
+
+// ─── PARTNER SYNC STATE ───
+let partnerName = '';
+let partnerPhone = '';
+
+function getWAMessage(name) {
+  const n = name || 'sayang';
+  return `CycleSync Update dari Aisyah 🌸\n\nHei ${n}, FYI aku lagi di fase Luteal nih (hari ke-18 dari 28). Moodku lagi tenang 😌, tapi energiku lagi sedang. Kalau aku agak sensitif belakangan ini, mungkin ini pengaruh hormonal ya — bukan marah sama kamu kok! 💕\n\nDikirim via CycleSync ❤️`;
+}
+
+// ── Notif setup form ──
+function updatePartnerPreview() {
+  const name = document.getElementById('partner-name-input').value.trim();
+  const phone = document.getElementById('partner-phone-input').value.trim();
+  const wrap = document.getElementById('partner-preview-wrap');
+  const msg = document.getElementById('partner-preview-msg');
+  if (name || phone) {
+    wrap.style.display = 'block';
+    msg.innerHTML = `<strong>CycleSync Update dari Aisyah 🌸</strong><br><br>Hei ${name||'sayang'}, FYI aku lagi di fase Luteal nih (hari ke-18 dari 28). Moodku lagi tenang 😌, tapi energiku lagi sedang. Kalau aku agak sensitif belakangan ini, mungkin ini pengaruh hormonal ya — bukan marah sama kamu kok! 💕<br><br><em style="font-size:9px;color:#667">Dikirim via CycleSync ❤️</em>`;
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+function savePartner() {
+  const name = document.getElementById('partner-name-input').value.trim();
+  const phone = document.getElementById('partner-phone-input').value.trim();
+  if (!name && !phone) { showToast('⚠️ Isi nama atau nomor dulu ya!'); return; }
+  partnerName = name;
+  partnerPhone = phone;
+  // Show saved state
+  document.getElementById('partner-empty-state').style.display = 'none';
+  document.getElementById('partner-saved-state').style.display = 'block';
+  document.getElementById('saved-partner-name').textContent = name || '(Tanpa nama)';
+  document.getElementById('saved-partner-phone').textContent = '+62' + phone;
+  showToast('✅ Kontak pasangan tersimpan!');
+}
+
+function editPartner() {
+  document.getElementById('partner-empty-state').style.display = 'flex';
+  document.getElementById('partner-saved-state').style.display = 'none';
+}
+
+// ── Partner Sync screen ──
+function updatePSPreview() {
+  const name = document.getElementById('ps-name').value.trim();
+  const msg = document.getElementById('ps-wa-preview');
+  const n = name || 'sayang';
+  msg.innerHTML = `<span style="font-weight:700">CycleSync Update dari Aisyah 🌸</span><br><br>Hei ${n}, FYI aku lagi di fase Luteal nih (hari ke-18 dari 28). Moodku lagi tenang 😌, tapi energiku lagi sedang. Kalau aku agak sensitif belakangan ini, mungkin ini pengaruh hormonal ya — bukan marah sama kamu kok! 💕<br><br><em style="color:#667;font-size:9px">Dikirim via CycleSync ❤️</em>`;
+}
+
+function savePartnerPS() {
+  const name = document.getElementById('ps-name').value.trim();
+  const phone = document.getElementById('ps-phone').value.trim();
+  if (!name && !phone) { showToast('⚠️ Isi nama atau nomor dulu ya!'); return; }
+  partnerName = name;
+  partnerPhone = phone;
+  document.getElementById('ps-no-contact').style.display = 'none';
+  document.getElementById('ps-has-contact').style.display = 'block';
+  document.getElementById('ps-saved-name').textContent = name || '(Tanpa nama)';
+  document.getElementById('ps-saved-phone').textContent = '+62' + phone;
+  showToast('✅ Kontak ' + (name||'pasangan') + ' tersimpan!');
+}
+
+function editPartnerPS() {
+  document.getElementById('ps-no-contact').style.display = 'flex';
+  document.getElementById('ps-has-contact').style.display = 'none';
+  if (partnerName) document.getElementById('ps-name').value = partnerName;
+  if (partnerPhone) document.getElementById('ps-phone').value = partnerPhone;
+}
+
+function sendPartnerWA() {
+  const name = partnerName || (document.getElementById('ps-name') ? document.getElementById('ps-name').value.trim() : '');
+  const phone = partnerPhone || (document.getElementById('ps-phone') ? document.getElementById('ps-phone').value.trim() : '');
+  if (!phone) { showToast('⚠️ Masukkan nomor WhatsApp dulu!'); return; }
+  const cleanPhone = '62' + phone.replace(/^0/, '').replace(/[-\s]/g, '');
+  const msg = encodeURIComponent(getWAMessage(name));
+  const url = `https://wa.me/${cleanPhone}?text=${msg}`;
+  window.open(url, '_blank');
+  showToast('📲 Membuka WhatsApp...');
+}
+
+function sendPartnerSMS() {
+  const phone = partnerPhone || '';
+  if (!phone) { showToast('⚠️ Masukkan nomor dulu!'); return; }
+  const msg = encodeURIComponent(getWAMessage(partnerName));
+  window.open(`sms:+62${phone.replace(/^0/,'').replace(/[-\s]/g,'')}?body=${msg}`, '_blank');
+  showToast('💬 Membuka SMS...');
+}
+
+function copyPartnerMsg() {
+  const msg = getWAMessage(partnerName);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(msg).then(() => showToast('📋 Pesan disalin!'));
+  } else {
+    showToast('📋 Pesan disalin!');
+  }
+}
+
+function sendToPartnerWA() { sendPartnerWA(); }
+
+// ─── TOAST ───
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>

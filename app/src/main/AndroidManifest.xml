@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -27,6 +30,9 @@
         <activity android:name=".ui.auth.SignUpActivity"/>
         <activity android:name=".ui.auth.LoginActivity"/>
 
+        <!-- Halaman Setup -->
+        <activity android:name=".ui.setup.SetupActivity"/>
+
         <!-- Onboarding (urutan flow) -->
         <activity android:name=".ui.onboarding.PersonalDataActivity"/>
         <activity android:name=".ui.onboarding.GoalSelectionActivity"/>
@@ -36,6 +42,7 @@
         <!-- Main App -->
         <activity android:name=".ui.dashboard.DashboardActivity"/>
         <activity android:name=".ui.dashboard.DailyLogActivity"/>
+        <activity android:name=".ui.dashboard.PartnerSyncActivity"/>
         <activity android:name=".ui.calendar.CalendarActivity"/>
 
         <activity android:name=".MainActivity"

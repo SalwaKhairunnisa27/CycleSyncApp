@@ -75,9 +75,11 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
-    // implementation(libs.sqlcipher.android)
     implementation(libs.androidx.sqlite.ktx)
     implementation(libs.androidx.security.crypto)
+
+    // WorkManager (Added for Notification Engine)
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
