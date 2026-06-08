@@ -9,10 +9,9 @@ enum class PregnancyPhase {
     THIRD_TRIMESTER
 }
 
-class PregnancyTransitionUseCase {
+class GetPregnancyPhaseUseCase {
 
-    fun getPregnancyPhase(lmp: Calendar, currentDate: Calendar): PregnancyPhase {
-
+    fun execute(lmp: Calendar, currentDate: Calendar): PregnancyPhase {
         val diffInMillis = currentDate.timeInMillis - lmp.timeInMillis
         val weeks = (diffInMillis / (1000 * 60 * 60 * 24)) / 7
 
