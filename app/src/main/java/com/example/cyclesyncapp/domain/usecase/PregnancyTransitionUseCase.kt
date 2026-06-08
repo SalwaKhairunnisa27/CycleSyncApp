@@ -1,27 +1,29 @@
 package com.example.cyclesyncapp.domain.usecase
 
-import java.util.Calendar
-
-enum class PregnancyPhase {
-    NOT_PREGNANT,
-    FIRST_TRIMESTER,
-    SECOND_TRIMESTER,
-    THIRD_TRIMESTER
+enum class UserStatus {
+    NORMAL, PREGNANT, POSTPARTUM
 }
 
 class PregnancyTransitionUseCase {
 
-    fun getPregnancyPhase(lmp: Calendar, currentDate: Calendar): PregnancyPhase {
-
-        val diffInMillis = currentDate.timeInMillis - lmp.timeInMillis
-        val weeks = (diffInMillis / (1000 * 60 * 60 * 24)) / 7
-
-        return when {
-            weeks < 0 -> PregnancyPhase.NOT_PREGNANT
-            weeks <= 12 -> PregnancyPhase.FIRST_TRIMESTER
-            weeks <= 27 -> PregnancyPhase.SECOND_TRIMESTER
-            weeks <= 40 -> PregnancyPhase.THIRD_TRIMESTER
-            else -> PregnancyPhase.NOT_PREGNANT
+    /**
+     * Mengelola transisi status pengguna dari hamil kembali ke normal.
+     */
+    fun transitionStatus(
+        currentStatus: UserStatus,
+        isPregnancyEnded: Boolean,
+        isFirstPeriodOccurred: Boolean
+    ): UserStatus {
+        return when (currentStatus) {
+            UserStatus.PREGNANT -> {
+                // Jika hamil selesai, pindah ke masa nifas/pemulihan (Postpartum)
+                if (isPregnancyEnded) UserStatus.POSTPARTUM else UserStatus.PREGNANT
+            }
+            UserStatus.POSTPARTUM -> {
+                // Kembali ke NORMAL hanya jika haid pertama sudah muncul
+                if (isFirstPeriodOccurred) UserStatus.NORMAL else UserStatus.POSTPARTUM
+            }
+            else -> UserStatus.NORMAL
         }
     }
 }

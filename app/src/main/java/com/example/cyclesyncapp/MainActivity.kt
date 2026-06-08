@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
 
             // 2. Update Rentang Masa Subur
             val fertileStartStr = dateFormat.format(Date(result.fertileStart))
+
             val fertileEndStr = dateFormat.format(Date(result.fertileEnd))
 
             // Menampilkan rentang (Contoh: "10 April 2025 - 15 April 2025")

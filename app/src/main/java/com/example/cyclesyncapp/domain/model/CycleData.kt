@@ -1,4 +1,4 @@
-package com.example.cyclesyncapp.model
+package com.example.cyclesyncapp.domain.model
 
 data class CycleData(
     val lastPeriodDate: String,

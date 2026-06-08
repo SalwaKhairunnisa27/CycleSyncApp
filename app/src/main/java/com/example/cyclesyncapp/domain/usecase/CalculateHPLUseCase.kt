@@ -4,13 +4,17 @@ import java.util.Calendar
 
 class CalculateHPLUseCase {
 
-    fun calculateHPL(lastMenstrualDate: Calendar): Calendar {
-        val result = lastMenstrualDate.clone() as Calendar
+    /**
+     * Menghitung Hari Perkiraan Lahir menggunakan Rumus Naegele:
+     * (HPHT + 7 Hari) - 3 Bulan + 1 Tahun
+     */
+    fun execute(lastMenstrualDate: Calendar): Long {
+        val hpl = lastMenstrualDate.clone() as Calendar
 
-        result.add(Calendar.DAY_OF_MONTH, 7)
-        result.add(Calendar.MONTH, -3)
-        result.add(Calendar.YEAR, 1)
+        hpl.add(Calendar.DAY_OF_MONTH, 7)
+        hpl.add(Calendar.MONTH, -3)
+        hpl.add(Calendar.YEAR, 1)
 
-        return result
+        return hpl.timeInMillis
     }
 }
