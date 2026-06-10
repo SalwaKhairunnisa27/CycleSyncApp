@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_main">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:elevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="←"
+                android:textSize="24sp"
+                android:textColor="@color/primary_text"
+                android:layout_marginEnd="16dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Education Center"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"
+                android:fontFamily="serif"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_card"
+            android:backgroundTint="#FDF4F7"
+            android:layout_marginTop="12dp"
+            android:paddingHorizontal="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔍" android:textSize="16sp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cari artikel kesehatan..." android:textSize="12sp" android:textColor="@color/primary_muted" android:layout_marginStart="8dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="20dp"
+            android:orientation="horizontal">
+            <TextView android:id="@+id/btnCatSemua" android:text="Semua" android:textColor="@color/white" android:background="@drawable/bg_pill_pink" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:textSize="11sp" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="8dp" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnCatHormon" android:text="Hormon" android:textColor="@color/primary_muted" android:background="@drawable/bg_card" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:textSize="11sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="8dp" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnCatNutrisi" android:text="Nutrisi" android:textColor="@color/primary_muted" android:background="@drawable/bg_card" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:textSize="11sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="8dp" android:clickable="true" android:focusable="true"/>
+            <TextView android:id="@+id/btnCatOlahraga" android:text="Olahraga" android:textColor="@color/primary_muted" android:background="@drawable/bg_card" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:textSize="11sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true" android:focusable="true"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="20dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Onboarding Tutorial Guide Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardEduTutorialGuide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:background="@drawable/bg_notif_card_gold">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Misi Onboarding: Baca Artikel Edukasi"
+                        android:textColor="@color/pt"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="💡 Ketuk salah satu artikel kesehatan di bawah untuk membacanya. Ini akan menyelesaikan misi onboarding terakhir Anda."
+                        android:textColor="@color/pm"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardFeatured"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                android:layout_marginBottom="16dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_splash"
+                    android:padding="20dp"
+                    android:orientation="vertical"
+                    android:gravity="bottom">
+                    <TextView 
+                        android:id="@+id/tvFeaturedArticleBadge"
+                        android:text="Untuk Fase Luteal Anda" 
+                        android:textColor="@color/white" 
+                        android:background="#44FFFFFF" 
+                        android:paddingHorizontal="8dp" 
+                        android:paddingVertical="4dp" 
+                        android:textSize="9sp" 
+                        android:textStyle="bold" 
+                        android:layout_width="wrap_content" 
+                        android:layout_height="wrap_content" 
+                        android:layout_marginBottom="8dp"/>
+                    <TextView 
+                        android:id="@+id/tvFeaturedArticleTitle"
+                        android:text="Mengapa Kamu Lebih Emosional di Akhir Siklus?" 
+                        android:textColor="@color/white" 
+                        android:textStyle="bold" 
+                        android:textSize="16sp" 
+                        android:fontFamily="serif" 
+                        android:layout_width="wrap_content" 
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvArticles"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_recommendation"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

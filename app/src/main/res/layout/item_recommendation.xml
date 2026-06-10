@@ -4,10 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,8 +21,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Kategori"
-            android:textColor="@color/purple"
-            android:textSize="12sp"
+            android:textColor="@color/p"
+            android:textSize="10sp"
             android:textStyle="bold" />
 
         <TextView
@@ -30,32 +31,32 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Judul Rekomendasi"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
+            android:textColor="@color/pt"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:text="Deskripsi singkat mengenai makanan atau olahraga."
-            android:textColor="@android:color/darker_gray"
-            android:textSize="14sp" />
+            android:textColor="@color/pm"
+            android:textSize="12sp" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="12dp"
-            android:background="#EEEEEE" />
+            android:layout_height="0.5dp"
+            android:layout_marginVertical="10dp"
+            android:background="@color/pb2" />
 
         <TextView
             android:id="@+id/tvBenefit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Manfaat: Menjaga energi tetap stabil."
-            android:textColor="@color/primary"
-            android:textSize="13sp"
+            android:textColor="@color/p"
+            android:textSize="11sp"
             android:textStyle="italic" />
 
     </LinearLayout>

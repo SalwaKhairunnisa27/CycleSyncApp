@@ -23,7 +23,7 @@ import com.example.cyclesyncapp.data.local.entity.RecommendationEntity // Import
         UserEntity::class,
         RecommendationEntity::class // Tambahkan ini
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class CycleDatabase : RoomDatabase() {

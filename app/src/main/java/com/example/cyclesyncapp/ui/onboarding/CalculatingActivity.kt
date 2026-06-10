@@ -21,7 +21,7 @@ class CalculatingActivity : AppCompatActivity() {
         }, 1500)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, DashboardActivity::class.java))
+            startActivity(Intent(this, NotifSetupActivity::class.java))
             finish()
         }, 2500)
     }

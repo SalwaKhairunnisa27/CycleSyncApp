@@ -58,39 +58,41 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp">
 
-            <!-- Kalender placeholder -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
+            <!-- Tanggal Mulai Haid Terakhir -->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                android:layout_marginBottom="24dp">
+                android:text="TANGGAL MULAI HAID TERAKHIR"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"
+                android:layout_marginBottom="12dp"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@color/white">
+            <TextView
+                android:id="@+id/tvLmpDate"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_card"
+                android:text="Pilih Tanggal..."
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:textColor="@color/primary_muted"
+                android:layout_marginBottom="8dp"
+                android:drawableEnd="@drawable/ic_launcher_foreground"
+                android:drawablePadding="8dp"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/primary"
-                        android:text="Februari 2026"
-                        android:textColor="@color/white"
-                        android:textStyle="bold"
-                        android:gravity="center"
-                        android:padding="12dp"/>
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:src="@drawable/bg_card"
-                        android:scaleType="centerInside"
-                        android:alpha="0.1" />
-                    <!-- Di sini nanti bisa ditaruh widget CalendarView sungguhan -->
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            <TextView
+                android:id="@+id/tvForgotLmp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saya lupa / tidak tahu tanggalnya"
+                android:textColor="@color/primary"
+                android:textSize="12sp"
+                android:layout_marginBottom="24dp"
+                android:padding="4dp"
+                android:clickable="true"
+                android:focusable="true"/>
 
             <!-- Durasi haid -->
             <TextView
@@ -118,7 +120,7 @@
                     android:background="@drawable/bg_card" android:gravity="center" android:layout_marginEnd="8dp"/>
                 <TextView android:id="@+id/btn5hr" android:layout_width="0dp"
                     android:layout_height="48dp" android:layout_weight="1"
-                    android:text="5 hr ✓" android:textSize="12sp" android:textColor="@color/primary"
+                    android:text="5 hr" android:textSize="12sp" android:textColor="@color/primary"
                     android:background="@drawable/bg_pill_pink" android:gravity="center" android:layout_marginEnd="8dp"/>
                 <TextView android:id="@+id/btn6hr" android:layout_width="0dp"
                     android:layout_height="48dp" android:layout_weight="1"
