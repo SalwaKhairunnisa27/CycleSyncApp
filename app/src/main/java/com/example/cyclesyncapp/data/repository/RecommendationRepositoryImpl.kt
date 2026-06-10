@@ -116,6 +116,48 @@ class RecommendationRepositoryImpl(
                 description = "Gerakan yoga ringan khusus ibu hamil.",
                 benefit = "Melenturkan otot panggul dan mengurangi stres.",
                 type = "EXERCISE"
+            ),
+
+            // --- SUPPLEMENT RECOMMENDATIONS FOR ALL PHASES ---
+            RecommendationEntity(
+                phase = HormonalPhase.MENSTRUATION.name,
+                category = "Suplemen",
+                title = "Tablet Tambah Darah & Vitamin C",
+                description = "Konsumsi tablet zat besi bersama segelas jus jeruk.",
+                benefit = "Membantu penyerapan zat besi untuk mengganti sel darah merah yang hilang.",
+                type = "SUPPLEMENT"
+            ),
+            RecommendationEntity(
+                phase = HormonalPhase.FOLLICULAR.name,
+                category = "Suplemen",
+                title = "Vitamin B Kompleks",
+                description = "Suplemen Vitamin B kompleks harian.",
+                benefit = "Membantu mengoptimalkan metabolisme karbohidrat menjadi energi sel.",
+                type = "SUPPLEMENT"
+            ),
+            RecommendationEntity(
+                phase = HormonalPhase.OVULATION.name,
+                category = "Suplemen",
+                title = "Zinc & Magnesium",
+                description = "Suplemen Zinc 15mg dan Magnesium 250mg.",
+                benefit = "Mendukung kualitas sel telur dan menunjang keseimbangan hormon reproduksi.",
+                type = "SUPPLEMENT"
+            ),
+            RecommendationEntity(
+                phase = HormonalPhase.LUTEAL.name,
+                category = "Suplemen",
+                title = "Kalsium & Vitamin D",
+                description = "Kalsium 1000mg dan Vitamin D3 1000 IU.",
+                benefit = "Membantu menstabilkan fluktuasi emosional PMS dan meredakan ketegangan otot rahim.",
+                type = "SUPPLEMENT"
+            ),
+            RecommendationEntity(
+                phase = HormonalPhase.PREGNANCY.name,
+                category = "Suplemen",
+                title = "Asam Folat & Zat Besi Bumil",
+                description = "Asam folat 400mcg serta Zat Besi khusus ibu hamil.",
+                benefit = "Sangat penting untuk mencegah cacat tabung saraf janin dan anemia pada ibu hamil.",
+                type = "SUPPLEMENT"
             )
         )
 
