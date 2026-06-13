@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_main">
+
+    <!-- Header Pink -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="← Kembali"
+            android:textColor="#EEFFFFFF"
+            android:textSize="14sp"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:id="@+id/tvArticleTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mengapa Kamu Lebih Emosional di Akhir Siklus?"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:fontFamily="serif"
+            android:lineHeight="26sp"/>
+
+        <TextView
+            android:id="@+id/tvArticleSub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🌸 Hormon · 5 menit baca · Literasi Ilmiah"
+            android:textSize="10sp"
+            android:textColor="#EEFFFFFF"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvArticleTag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FDF4F7"
+                android:padding="12dp"
+                android:text="📌 Sesuai Fase Luteal aktifmu (Hari ke-18)"
+                android:textSize="10sp"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fluktuasi Hormon di Fase Luteal"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"
+                android:fontFamily="serif"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/tvArticleContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Setelah ovulasi, kadar progesteron meningkat tajam sementara estrogen menurun. Perubahan ini berdampak langsung pada kadar serotonin — neurotransmitter yang mengatur suasana hati."
+                android:textSize="13sp"
+                android:textColor="@color/primary_text"
+                android:lineHeight="22sp"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apa yang Terjadi di Otak?"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"
+                android:fontFamily="serif"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Penelitian Ponzo et al. (2022) menunjukkan 45.2% perempuan melaporkan gejala PMS yang cukup parah hingga mempengaruhi produktivitas kerja — rata-rata 5.8 hari per tahun."
+                android:textSize="13sp"
+                android:textColor="@color/primary_text"
+                android:lineHeight="22sp"
+                android:layout_marginBottom="24dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="24dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:orientation="vertical"
+                    android:background="#E8F5E9"> <!-- Green light bg -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="✅ Tips Berbasis Sains"
+                        android:textStyle="bold"
+                        android:textColor="#2E7D32"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="8dp"/>
+                    <TextView android:text="• Konsumsi kalsium 1200mg/hari" android:textSize="11sp" android:textColor="#1B5E20" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="4dp"/>
+                    <TextView android:text="• Yoga 30 menit/hari untuk stabilkan mood" android:textSize="11sp" android:textColor="#1B5E20" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="4dp"/>
+                    <TextView android:text="• Kurangi kafein &amp; garam berlebih" android:textSize="11sp" android:textColor="#1B5E20" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📚 Referensi: Abdi et al. (2021), Ponzo et al. (2022), Siminiuc &amp; Turcanu (2023)"
+                android:textSize="9sp"
+                android:textColor="@color/primary_muted"
+                android:layout_marginBottom="32dp"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

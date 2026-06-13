@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/bg_dialog_pregnancy">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mulai Pelacakan Kehamilan"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/pt"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"/>
+
+    <RadioGroup
+        android:id="@+id/rgInputType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="8dp">
+
+        <!-- Option 1: HPHT -->
+        <RadioButton
+            android:id="@+id/rbLmpDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Saya tahu tanggal HPHT"
+            android:textColor="@color/pt"
+            android:textSize="13sp"
+            android:checked="true"
+            android:buttonTint="@color/purple" />
+
+        <LinearLayout
+            android:id="@+id/layoutLmpDateInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="32dp"
+            android:paddingEnd="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/tvSelectedLmpDate"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_card"
+                android:text="Pilih Tanggal HPHT..."
+                android:textColor="@color/purple"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"/>
+        </LinearLayout>
+
+        <!-- Option 2: Doctor Gestational Age -->
+        <RadioButton
+            android:id="@+id/rbGestationalAge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Saya tahu usia kehamilan dari Dokter"
+            android:textColor="@color/pt"
+            android:textSize="13sp"
+            android:buttonTint="@color/purple" />
+
+        <LinearLayout
+            android:id="@+id/layoutGestationalAgeInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="32dp"
+            android:paddingEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/etWeeks"
+                android:layout_width="60dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_card"
+                android:inputType="number"
+                android:gravity="center"
+                android:hint="0"
+                android:maxLength="2"
+                android:textSize="14sp"
+                android:textColor="@color/pt"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="minggu"
+                android:textColor="@color/pm"
+                android:textSize="12sp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="12dp"/>
+
+            <EditText
+                android:id="@+id/etDays"
+                android:layout_width="60dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_card"
+                android:inputType="number"
+                android:gravity="center"
+                android:hint="0"
+                android:maxLength="1"
+                android:textSize="14sp"
+                android:textColor="@color/pt"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="hari"
+                android:textColor="@color/pm"
+                android:textSize="12sp"
+                android:layout_marginStart="6dp"/>
+        </LinearLayout>
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Batal"
+            android:textColor="@color/pm"
+            android:textAllCaps="false"/>
+
+        <Button
+            android:id="@+id/btnConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aktifkan"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/purple"
+            android:textAllCaps="false"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+</LinearLayout>

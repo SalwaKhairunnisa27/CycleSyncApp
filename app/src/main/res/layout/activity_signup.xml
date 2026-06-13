@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg">
+
+    <!-- Header pink -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/p"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingTop="60dp"
+        android:paddingBottom="40dp"
+        android:paddingHorizontal="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Buat Akun"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:fontFamily="serif"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mulai perjalanan kesehatan hormonalmu"
+            android:textSize="13sp"
+            android:textColor="#EEFFFFFF"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+
+    <!-- Body -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Input Nama -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NAMA LENGKAP"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/pm"
+                android:letterSpacing="0.05"/>
+
+            <EditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_card_outline"
+                android:hint="cth: salvina arizka"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp"
+                android:inputType="textPersonName"/>
+
+            <!-- Input Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ALAMAT EMAIL"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/pm"
+                android:letterSpacing="0.05"/>
+
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_card_outline"
+                android:hint="cth: salvina@gmail.com"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp"
+                android:inputType="textEmailAddress"/>
+
+            <!-- Input Password -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KATA SANDI"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/pm"
+                android:letterSpacing="0.05"/>
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_card_outline"
+                android:hint="••••••••"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="30dp"
+                android:inputType="textPassword"/>
+
+            <!-- Tombol Daftar -->
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Daftar"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/p"/>
+
+            <TextView
+                android:id="@+id/tvLoginLink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sudah punya akun? Masuk di sini"
+                android:textSize="12sp"
+                android:textColor="@color/pm"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"/>
+
+            <!-- Terms and Privacy Policy -->
+            <TextView
+                android:id="@+id/tvTerms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dengan mendaftar kamu setuju Syarat &amp; Ketentuan dan Kebijakan Privasi"
+                android:textSize="11sp"
+                android:textColor="@color/pm"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginTop="32dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

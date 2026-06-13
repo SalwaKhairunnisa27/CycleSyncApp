@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+    <!-- Circle highlight background -->
+    <View
+        android:id="@+id/viewHighlight"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_circle_pink"
+        android:visibility="gone" />
+
+    <!-- Day text -->
+    <TextView
+        android:id="@+id/tvDayNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="15"
+        android:textColor="@color/pt"
+        android:textSize="14sp" />
+
+    <!-- Tutorial Click Hint Label -->
+    <TextView
+        android:id="@+id/tvTutorialHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:background="@drawable/bg_pill_gold"
+        android:text="Klik ini"
+        android:textColor="@color/white"
+        android:textSize="7sp"
+        android:textStyle="bold"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="1dp"
+        android:visibility="gone" />
+
+    <!-- Symptom log dot indicator -->
+    <View
+        android:id="@+id/viewLogDot"
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="4dp"
+        android:background="@color/p"
+        android:visibility="gone" />
+
+</FrameLayout>
