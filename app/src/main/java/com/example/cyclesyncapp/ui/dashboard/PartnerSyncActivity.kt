@@ -86,14 +86,49 @@ class PartnerSyncActivity : AppCompatActivity() {
                 val isPregnant = user?.isPregnant ?: false
 
                 if (isPregnant) {
-                    detectedPhaseName = "Fase Kehamilan 🤰"
-                    detectedDayNumber = 0
-                    tvPhaseInfo.text = detectedPhaseName
-                    tvMoodInfo.text = "Mode Kehamilan: Menjaga kesehatan bersama pasangan"
-                    detectedSymptoms = "Sedang menjaga kesehatan kehamilan"
-                    updateMessagePreview()
+                    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                    val latestCycle = database.cycleDao().getLatestCycle()
+                    var weeks = 0
+                    var days = 0
+                    var trimester = "1"
+                    if (latestCycle != null) {
+                        val startParts = latestCycle.startDate.split("-")
+                        if (startParts.size == 3) {
+                            val today = Calendar.getInstance()
+                            val lmp = Calendar.getInstance().apply {
+                                set(startParts[0].toInt(), startParts[1].toInt() - 1, startParts[2].toInt())
+                            }
+                            val diffInMillis = today.timeInMillis - lmp.timeInMillis
+                            val totalDays = (diffInMillis / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(0)
+                            weeks = totalDays / 7
+                            days = totalDays % 7
+                            trimester = when {
+                                weeks <= 12 -> "1"
+                                weeks <= 27 -> "2"
+                                else -> "3"
+                            }
+                        }
+                    }
+
+                    detectedPhaseName = "Fase Kehamilan (Minggu ke-$weeks, Trimester $trimester) 🤰"
+                    detectedDayNumber = weeks * 7 + days
+                    tvPhaseInfo.text = "$detectedPhaseName · Hari ke-$detectedDayNumber hamil"
+
+                    val todayStr = sdf.format(Calendar.getInstance().time)
+                    database.dailyLogDao().getLogByDate(todayStr).collect { log ->
+                        if (log != null) {
+                            val symptomsText = log.symptoms ?: "Tidak ada keluhan fisik"
+                            detectedSymptoms = symptomsText
+                            tvMoodInfo.text = "Gejala hari ini: $symptomsText"
+                        } else {
+                            detectedSymptoms = null
+                            tvMoodInfo.text = "Gejala hari ini: Belum dicatat"
+                        }
+                        updateMessagePreview()
+                    }
                     return@launch
                 }
+
 
                 // Detect cycle phase
                 val latestCycle = database.cycleDao().getLatestCycle()

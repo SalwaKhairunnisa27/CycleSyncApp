@@ -12,7 +12,11 @@ class PartnerSyncUseCase {
         } else {
             "Hari ini aku merasa cukup baik."
         }
-        return "${partnerStr}sekadar update hari ini aku sedang di $phase (Hari ke-$dayOfCycle dari siklus). $symptomsStr Terima kasih ya atas pengertian dan dukungannya! 💖"
+        return if (phase.contains("Kehamilan")) {
+            "${partnerStr}sekadar update hari ini aku sedang di $phase. $symptomsStr Terima kasih ya atas pengertian dan dukungannya! 💖"
+        } else {
+            "${partnerStr}sekadar update hari ini aku sedang di $phase (Hari ke-$dayOfCycle dari siklus). $symptomsStr Terima kasih ya atas pengertian dan dukungannya! 💖"
+        }
     }
 
     fun shareStatusToWhatsApp(context: Context, phone: String, message: String) {
