@@ -49,3 +49,9 @@ Sdk/
 .android/
 .gradle/
 .idea/
+
+# Temporary and Document files
+*.pdf
+*.png
+*.zip
+*.stackdump
