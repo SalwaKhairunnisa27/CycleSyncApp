@@ -42,7 +42,8 @@ data class CalendarDay(
     val isPredictedValuesLoaded: Boolean = false,
     val isPredictedOvulation: Boolean = false,
     val pregnancyWeek: Int? = null,
-    val trimester: Int? = null
+    val trimester: Int? = null,
+    val isTutorialHighlight: Boolean = false
 )
 
 class CalendarActivity : AppCompatActivity() {
@@ -120,6 +121,31 @@ class CalendarActivity : AppCompatActivity() {
 
             if (isPregnant) {
                 setupPregnancyUI()
+            }
+
+            // Set current month/selected date to LMP date in tutorial mode
+            val onboardingStep = prefs.getInt("onboarding_step", 0)
+            val pregnancyStep = prefs.getInt("pregnancy_onboarding_step", 0)
+            isTutorialMode = onboardingStep == 1 || pregnancyStep == 1
+            isPregTutorialMode = pregnancyStep == 1
+
+            if (isTutorialMode) {
+                val lmpKey = if (isPregTutorialMode) "pregnancy_onboarding_lmp" else "onboarding_lmp"
+                val lmpStr = prefs.getString(lmpKey, null)
+                if (lmpStr != null && lmpStr != "UNKNOWN_LMP") {
+                    try {
+                        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                        sdf.parse(lmpStr)?.let { lmpDate ->
+                            val calSelected = Calendar.getInstance().apply { time = lmpDate }
+                            currentSelectedCalendar = calSelected.clone() as Calendar
+                            currentMonthCalendar = calSelected.clone() as Calendar
+                            currentMonthCalendar.set(Calendar.DAY_OF_MONTH, 1)
+                            setDate(currentSelectedCalendar)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }
 
             // Load predictions and history
@@ -455,6 +481,10 @@ class CalendarActivity : AppCompatActivity() {
             val totalDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
             val today = Calendar.getInstance()
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+            
+            val prefs = getSharedPreferences("cycle_sync_prefs", MODE_PRIVATE)
+            val lmpKey = if (isPregTutorialMode) "pregnancy_onboarding_lmp" else "onboarding_lmp"
+            val tutorialLmpStr = if (isTutorialMode) prefs.getString(lmpKey, null) else null
 
             // Ambil semua log untuk bulan ini dari database
             val allLogsList = mutableMapOf<String, DailyLogEntity>()
@@ -558,6 +588,7 @@ class CalendarActivity : AppCompatActivity() {
                         }
                     }
 
+                    val isHighlight = isTutorialMode && tutorialLmpStr != null && tutorialLmpStr == dateKey
                     daysList.add(
                         CalendarDay(
                             date = dayCal.time,
@@ -570,7 +601,8 @@ class CalendarActivity : AppCompatActivity() {
                             isPredictedFertile = isPredFertile,
                             isPredictedOvulation = isPredOv,
                             pregnancyWeek = pregWeek,
-                            trimester = trimester
+                            trimester = trimester,
+                            isTutorialHighlight = isHighlight
                         )
                     )
                 }
@@ -970,10 +1002,10 @@ class CalendarActivity : AppCompatActivity() {
                 holder.itemView.isClickable = true
                 holder.itemView.setOnClickListener { onDayClick(day) }
 
-                val isTodayInTutorial = isTutorialMode && day.isToday && behavior.state != BottomSheetBehavior.STATE_EXPANDED
-                holder.tvTutorialHint.visibility = if (isTodayInTutorial) View.VISIBLE else View.GONE
+                val isHighlightInTutorial = isTutorialMode && day.isTutorialHighlight && behavior.state != BottomSheetBehavior.STATE_EXPANDED
+                holder.tvTutorialHint.visibility = if (isHighlightInTutorial) View.VISIBLE else View.GONE
                 
-                if (isTodayInTutorial) {
+                if (isHighlightInTutorial) {
                     holder.itemView.setBackgroundResource(R.drawable.bg_tutorial_highlight)
                 } else if (day.isSelected) {
                     holder.tvDayNumber.setTypeface(null, android.graphics.Typeface.BOLD)
